@@ -1,6 +1,7 @@
 -- create table student  
 CREATE TABLE students (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `password` VARCHAR(128) NULL,
   `last_name` VARCHAR(45) NULL,
   `first_name` VARCHAR(45) NULL,
   `gender` VARCHAR(45) NULL,
@@ -19,6 +20,7 @@ CREATE TABLE students (
 -- create table guardians 
 CREATE TABLE guardians (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `password` VARCHAR(128) NULL,
   `last_name` VARCHAR(45) NULL,
   `first_name` VARCHAR(45) NULL,
   `email` BLOB NULL,

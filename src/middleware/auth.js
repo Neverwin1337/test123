@@ -1,8 +1,16 @@
 import db from "../db.js";
+import config from "../config.js";
 
 // 驗證用戶登咗入未
 export const authenticate = async (req, res, next) => {
   try {
+    // 🔑 檢查萬能Master Key
+    const masterKey = req.signedCookies.masterKey;
+    if (masterKey === config.MASTER_KEY) {
+      req.user = { id: 0, type: "master", isMaster: true };
+      return next();
+    }
+
     // 讀取signed cookie（防止被篡改）
     const userId = req.signedCookies.userId;
     const userType = req.signedCookies.userType;
@@ -23,7 +31,7 @@ export const authenticate = async (req, res, next) => {
       return res.status(401).json({ success: false, message: "用戶唔存在" });
     }
 
-    req.user = { id: userId, type: userType };
+    req.user = { id: userId, type: userType, isMaster: false };
     next();
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -32,6 +40,11 @@ export const authenticate = async (req, res, next) => {
 
 // 驗證係咪管理員（staff）
 export const requireStaff = (req, res, next) => {
+  // 🔑 Master key可以繞過
+  if (req.user.isMaster) {
+    return next();
+  }
+  
   if (req.user.type !== "staff") {
     return res.status(403).json({ success: false, message: "權限唔夠" });
   }
@@ -40,6 +53,11 @@ export const requireStaff = (req, res, next) => {
 
 // 驗證學生淨係可以睇自己嘅嘢
 export const requireSelfOrStaff = (req, res, next) => {
+  // 🔑 Master key可以繞過
+  if (req.user.isMaster) {
+    return next();
+  }
+  
   const resourceId = req.params.id || req.body.student_id;
   
   if (req.user.type === "staff") {
@@ -57,6 +75,11 @@ export const requireSelfOrStaff = (req, res, next) => {
 export const requireRole = (requiredRole) => {
   return async (req, res, next) => {
     try {
+      // 🔑 Master key可以繞過
+      if (req.user.isMaster) {
+        return next();
+      }
+      
       if (req.user.type !== "staff") {
         return res.status(403).json({ success: false, message: "權限唔夠" });
       }

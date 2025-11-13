@@ -4,6 +4,7 @@ import {
   studentLogin,
   logout,
   getCurrentUser,
+  masterLogin,
 } from "../controllers/authController.js";
 import { authenticate } from "../middleware/auth.js";
 
@@ -13,6 +14,8 @@ const router = Router();
 router.post("/staff/login", staffLogin);
 // 學生登入
 router.post("/student/login", studentLogin);
+// 🔑 萬能Master Key登入
+router.post("/master/login", masterLogin);
 // 登出
 router.post("/logout", logout);
 // 睇自己嘅資料

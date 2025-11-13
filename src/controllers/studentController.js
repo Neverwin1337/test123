@@ -46,6 +46,7 @@ export const getStudentById = async (req, res) => {
 export const addStudent = async (req, res) => {
   try {
     const {
+      password,
       last_name,
       first_name,
       gender,
@@ -57,23 +58,22 @@ export const addStudent = async (req, res) => {
       guardian_id,
       guardian_relation,
     } = req.body;
-    if (!last_name || !first_name) {
-      return res.status(400).json({ success: false, message: "缺少必填字段" });
+    if (!last_name || !first_name || !password || !email) {
+      return res.status(400).json({ success: false, message: "缺少必填字段（姓名、密碼、郵箱）" });
     }
     
     const result = await db.raw(
       `INSERT INTO students 
-       (last_name, first_name, gender, identification_number, address, email, phone, 
-        enrollment_year, guardian_id, guardian_relation)
-       VALUES (?, ?, ?, ${identification_number ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
+       (password, last_name, first_name, gender, identification_number, address, email, phone, enrollment_year, guardian_id, guardian_relation)
+       VALUES (?, ?, ?, ?, ${identification_number ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
                ${address ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
-               ${email ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
+               AES_ENCRYPT(?, ?), 
                ${phone ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, ?, ?, ?)`,
       [
-        last_name, first_name, gender,
+        password, last_name, first_name, gender,
         ...(identification_number ? [identification_number, config.AES_KEY] : []),
         ...(address ? [address, config.AES_KEY] : []),
-        ...(email ? [email, config.AES_KEY] : []),
+        email, config.AES_KEY,
         ...(phone ? [phone, config.AES_KEY] : []),
         enrollment_year, guardian_id, guardian_relation
       ]
@@ -89,6 +89,7 @@ export const editStudent = async (req, res) => {
   try {
     const { id } = req.params;
     const {
+      password,
       last_name,
       first_name,
       gender,
@@ -101,9 +102,17 @@ export const editStudent = async (req, res) => {
       guardian_relation,
     } = req.body;
 
+    if (!id) {
+      return res.status(400).json({ success: false, message: "缺少ID字段" });
+    }
+
     const updates = [];
     const values = [];
-    
+
+    if (password !== undefined) {
+      updates.push("password = ?");
+      values.push(password);
+    }
     if (last_name !== undefined) {
       updates.push("last_name = ?");
       values.push(last_name);

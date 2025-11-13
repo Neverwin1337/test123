@@ -7,7 +7,7 @@
 - 根據role有唔同權限
 
 ### 2. 學生 (Student)
-- 登入方式：學號 + 身份證後6位
+- 登入方式：Email + 密碼
 - 淨係可以睇同改自己嘅資料
 
 ---
@@ -145,10 +145,10 @@ curl -X POST http://localhost:3000/api/disciplinary/AddDisciplinary \
 
 ### 3. 學生登入同睇自己嘅嘢
 ```bash
-# 登入（用學號 + 身份證後6位）
+# 登入（用Email + 密碼）
 curl -X POST http://localhost:3000/api/auth/student/login \
   -H "Content-Type: application/json" \
-  -d '{"id": 1, "password": "123456"}' \
+  -d '{"email": "student@example.com", "password": "student123"}' \
   -c cookies.txt
 
 # 睇自己嘅資料

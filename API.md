@@ -28,18 +28,20 @@ npm run dev    # 开发模式（自动重启）
 - 请求体:
 ```json
 {
+  "password": "student123",
   "last_name": "张",
   "first_name": "三",
   "gender": "男",
   "identification_number": "123456789",
   "address": "地址",
-  "email": "email@example.com",
+  "email": "student@example.com",
   "phone": "12345678",
   "enrollment_year": 2024,
   "guardian_id": 1,
   "guardian_relation": "父亲"
 }
 ```
+**必填字段**: `password`, `last_name`, `first_name`, `email`
 
 ### 编辑学生
 - **POST** `/api/students/edit/:id`

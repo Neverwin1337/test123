@@ -46,33 +46,33 @@ export const staffLogin = async (req, res) => {
   }
 };
 
-// 學生登入（用學號同身份證後6位做密碼）
+// 學生登入（用email + password）
 export const studentLogin = async (req, res) => {
   try {
-    const { id, password } = req.body;
+    const { email, password } = req.body;
     
-    if (!id || !password) {
-      return res.status(400).json({ success: false, message: "缺少账号或密码" });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "缺少郵箱或密碼" });
     }
 
-    // 查學生同埋佢嘅身份證號
-    const student = await db.raw(
-      `SELECT id, first_name, last_name, 
-       CAST(AES_DECRYPT(identification_number, ?) AS CHAR) as id_number
-       FROM students WHERE id = ?`,
-      [config.AES_KEY, id]
+    // 查學生（解密email嚟匹配）
+    const students = await db.raw(
+      `SELECT id, password, first_name, last_name, 
+       CAST(AES_DECRYPT(email, ?) AS CHAR) as decrypted_email
+       FROM students`,
+      [config.AES_KEY]
     );
 
-    const studentData = student[0][0];
+    // 喺結果入面搵匹配嘅email
+    const studentData = students[0].find(s => s.decrypted_email === email);
     
     if (!studentData) {
-      return res.status(401).json({ success: false, message: "賬號或密碼錯咗" });
+      return res.status(401).json({ success: false, message: "郵箱或密碼錯咗" });
     }
 
-    // 驗證密碼（身份證後6位）
-    const last6Digits = studentData.id_number?.slice(-6);
-    if (last6Digits !== password) {
-      return res.status(401).json({ success: false, message: "賬號或密碼錯咗" });
+    // 驗證密碼
+    if (studentData.password !== password) {
+      return res.status(401).json({ success: false, message: "郵箱或密碼錯咗" });
     }
 
     // 用signed cookie防止被篡改
@@ -114,7 +114,20 @@ export const logout = (req, res) => {
 // 攞當前用戶嘅資料
 export const getCurrentUser = async (req, res) => {
   try {
-    const { id, type } = req.user;
+    const { id, type, isMaster } = req.user;
+    
+    // 🔑 Master用戶
+    if (isMaster) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          id: 0,
+          name: "超級管理員",
+          type: "master",
+          permissions: "全部權限"
+        }
+      });
+    }
     
     let userData;
     if (type === "staff") {
@@ -137,6 +150,42 @@ export const getCurrentUser = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: userData });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 🔑 Master Key登入
+export const masterLogin = (req, res) => {
+  try {
+    const { masterKey } = req.body;
+    
+    if (!masterKey) {
+      return res.status(400).json({ success: false, message: "缺少Master Key" });
+    }
+    
+    if (masterKey !== config.MASTER_KEY) {
+      return res.status(401).json({ success: false, message: "Master Key錯誤" });
+    }
+    
+    // 設置萬能cookie
+    res.cookie("masterKey", masterKey, {
+      httpOnly: true,
+      signed: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production'
+    });
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        id: 0,
+        name: "超級管理員",
+        type: "master",
+        message: "已獲得全部權限"
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

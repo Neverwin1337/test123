@@ -1,5 +1,7 @@
 import express from "express";
+
 import cookieParser from "cookie-parser";
+
 import config from "./config.js";
 import authRoutes from "./routes/auth.js";
 import studentRoutes from "./routes/student.js";
