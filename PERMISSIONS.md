@@ -3,7 +3,7 @@
 ## 用戶類型
 
 ### 1. 員工 (Staff)
-- 登入方式：員工ID + 密碼
+- 登入方式：Email + 密碼
 - 根據role有唔同權限
 
 ### 2. 學生 (Student)
@@ -107,7 +107,7 @@
 # 登入
 curl -X POST http://localhost:3000/api/auth/staff/login \
   -H "Content-Type: application/json" \
-  -d '{"id": 1, "password": "password123"}' \
+  -d '{"email": "aro@staff.com", "password": "aro123"}' \
   -c cookies.txt
 
 # 加成績（淨係ARO role先得）
@@ -128,7 +128,7 @@ curl -X POST http://localhost:3000/api/grades/AddGrading \
 # 登入
 curl -X POST http://localhost:3000/api/auth/staff/login \
   -H "Content-Type: application/json" \
-  -d '{"id": 2, "password": "password456"}' \
+  -d '{"email": "dro@staff.com", "password": "dro123"}' \
   -c cookies.txt
 
 # 加紀律記錄（淨係DRO role先得）

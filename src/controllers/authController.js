@@ -1,19 +1,29 @@
 import db from "../db.js";
 import config from "../config.js";
 
-// 員工登入
+// 員工登入（用email + password）
 export const staffLogin = async (req, res) => {
   try {
-    const { id, password } = req.body;
+    const { email, password } = req.body;
     
-    if (!id || !password) {
-      return res.status(400).json({ success: false, message: "缺少账号或密码" });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "缺少郵箱或密碼" });
     }
 
-    const staff = await db("staffs").where({ id }).first();
+    // 查詢員工（解密email同password嚟匹配）
+    const staffs = await db.raw(
+      `SELECT id, last_name, first_name, role, department,
+       CAST(AES_DECRYPT(email, ?) AS CHAR) as decrypted_email,
+       CAST(AES_DECRYPT(password, ?) AS CHAR) as decrypted_password
+       FROM staffs`,
+      [config.AES_KEY, config.AES_KEY]
+    );
     
-    if (!staff || staff.password !== password) {
-      return res.status(401).json({ success: false, message: "账号或密码错误" });
+    // 喺結果入面搵匹配嘅email
+    const staff = staffs[0].find(s => s.decrypted_email === email);
+    
+    if (!staff || staff.decrypted_password !== password) {
+      return res.status(401).json({ success: false, message: "郵箱或密碼錯咗" });
     }
 
     // 用signed cookie防止被篡改
@@ -55,12 +65,13 @@ export const studentLogin = async (req, res) => {
       return res.status(400).json({ success: false, message: "缺少郵箱或密碼" });
     }
 
-    // 查學生（解密email嚟匹配）
+    // 查學生（解密email同password嚟匹配）
     const students = await db.raw(
-      `SELECT id, password, first_name, last_name, 
-       CAST(AES_DECRYPT(email, ?) AS CHAR) as decrypted_email
+      `SELECT id, first_name, last_name, 
+       CAST(AES_DECRYPT(email, ?) AS CHAR) as decrypted_email,
+       CAST(AES_DECRYPT(password, ?) AS CHAR) as decrypted_password
        FROM students`,
-      [config.AES_KEY]
+      [config.AES_KEY, config.AES_KEY]
     );
 
     // 喺結果入面搵匹配嘅email
@@ -71,7 +82,7 @@ export const studentLogin = async (req, res) => {
     }
 
     // 驗證密碼
-    if (studentData.password !== password) {
+    if (studentData.decrypted_password !== password) {
       return res.status(401).json({ success: false, message: "郵箱或密碼錯咗" });
     }
 

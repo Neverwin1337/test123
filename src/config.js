@@ -1,4 +1,4 @@
-export default config = {
+export default {
     AES_KEY: "polyusecretkeyforAES",
     COOKIE_SECRET: "polyusecretkeyforCookie",  // 用嚟簽名cookie，防止被篡改
     MASTER_KEY: "polyusecretkeyforTest", 

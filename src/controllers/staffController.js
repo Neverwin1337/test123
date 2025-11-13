@@ -62,12 +62,12 @@ export const addStaff = async (req, res) => {
     const result = await db.raw(
       `INSERT INTO staffs 
        (password, last_name, first_name, gender, identification_number, address, email, phone, department, role)
-       VALUES (?, ?, ?, ?, ${identification_number ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
+       VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ${identification_number ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
                ${address ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
                ${email ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
                ${phone ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, ?, ?)`,
       [
-        password, last_name, first_name, gender,
+        password, config.AES_KEY, last_name, first_name, gender,
         ...(identification_number ? [identification_number, config.AES_KEY] : []),
         ...(address ? [address, config.AES_KEY] : []),
         ...(email ? [email, config.AES_KEY] : []),
@@ -101,8 +101,8 @@ export const editStaff = async (req, res) => {
     const values = [];
     
     if (password !== undefined) {
-      updates.push("password = ?");
-      values.push(password);
+      updates.push("password = AES_ENCRYPT(?, ?)");
+      values.push(password, config.AES_KEY);
     }
     if (last_name !== undefined) {
       updates.push("last_name = ?");

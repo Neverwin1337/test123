@@ -38,14 +38,15 @@ export const getGuardianById = async (req, res) => {
 
 export const addGuardian = async (req, res) => {
   try {
-    const { last_name, first_name, email, phone } = req.body;
+    const { password, last_name, first_name, email, phone } = req.body;
     if (!last_name || !first_name) {
       return res.status(400).json({ success: false, message: "缺少必填字段" });
     }
     const result = await db.raw(
-      `INSERT INTO guardians (last_name, first_name, email, phone)
-       VALUES (?, ?, ${email ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, ${phone ? 'AES_ENCRYPT(?, ?)' : 'NULL'})`,
+      `INSERT INTO guardians (password, last_name, first_name, email, phone)
+       VALUES (${password ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, ?, ?, ${email ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, ${phone ? 'AES_ENCRYPT(?, ?)' : 'NULL'})`,
       [
+        ...(password ? [password, config.AES_KEY] : []),
         last_name, first_name,
         ...(email ? [email, config.AES_KEY] : []),
         ...(phone ? [phone, config.AES_KEY] : [])
@@ -60,11 +61,15 @@ export const addGuardian = async (req, res) => {
 export const editGuardian = async (req, res) => {
   try {
     const { id } = req.params;
-    const { last_name, first_name, email, phone } = req.body;
+    const { password, last_name, first_name, email, phone } = req.body;
 
     const updates = [];
     const values = [];
     
+    if (password !== undefined) {
+      updates.push("password = AES_ENCRYPT(?, ?)");
+      values.push(password, config.AES_KEY);
+    }
     if (last_name !== undefined) {
       updates.push("last_name = ?");
       values.push(last_name);

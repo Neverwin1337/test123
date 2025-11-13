@@ -180,6 +180,17 @@ npm run dev    # 开发模式（自动重启）
 ### 获取单个员工
 - **GET** `/api/staffs/:id`
 
+### 员工登录
+- **POST** `/api/auth/staff/login`
+- 员工使用邮箱(email)和密码登录。
+- 请求体:
+```json
+{
+  "email": "staff@example.com",
+  "password": "staff_password"
+}
+```
+
 ### 添加员工
 - **POST** `/api/staffs`
 - 请求体:

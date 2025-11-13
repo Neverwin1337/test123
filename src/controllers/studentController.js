@@ -65,12 +65,12 @@ export const addStudent = async (req, res) => {
     const result = await db.raw(
       `INSERT INTO students 
        (password, last_name, first_name, gender, identification_number, address, email, phone, enrollment_year, guardian_id, guardian_relation)
-       VALUES (?, ?, ?, ?, ${identification_number ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
+       VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ${identification_number ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
                ${address ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, 
                AES_ENCRYPT(?, ?), 
                ${phone ? 'AES_ENCRYPT(?, ?)' : 'NULL'}, ?, ?, ?)`,
       [
-        password, last_name, first_name, gender,
+        password, config.AES_KEY, last_name, first_name, gender,
         ...(identification_number ? [identification_number, config.AES_KEY] : []),
         ...(address ? [address, config.AES_KEY] : []),
         email, config.AES_KEY,
@@ -110,8 +110,8 @@ export const editStudent = async (req, res) => {
     const values = [];
 
     if (password !== undefined) {
-      updates.push("password = ?");
-      values.push(password);
+      updates.push("password = AES_ENCRYPT(?, ?)");
+      values.push(password, config.AES_KEY);
     }
     if (last_name !== undefined) {
       updates.push("last_name = ?");

@@ -10,6 +10,7 @@ import disciplinaryRoutes from "./routes/dro.js";
 import guardianRoutes from "./routes/guardian.js";
 import staffRoutes from "./routes/staff.js";
 import courseRoutes from "./routes/course.js";
+import db from "./db.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/disciplinary", disciplinaryRoutes);
 app.use("/api/guardians", guardianRoutes);
 app.use("/api/staffs", staffRoutes);
 app.use("/api/courses", courseRoutes);
+
 
 app.listen(config.PORT, () => {
   console.log(`Server listening on port ${config.PORT}`);
