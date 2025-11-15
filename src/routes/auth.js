@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   staffLogin,
   studentLogin,
+  guardianLogin,
   logout,
   getCurrentUser,
   masterLogin,
@@ -14,6 +15,8 @@ const router = Router();
 router.post("/staff/login", staffLogin);
 // 學生登入
 router.post("/student/login", studentLogin);
+// 家長登入
+router.post("/guardian/login", guardianLogin);
 // 🔑 萬能Master Key登入
 router.post("/master/login", masterLogin);
 // 登出

@@ -115,6 +115,60 @@ export const studentLogin = async (req, res) => {
   }
 };
 
+// 家長登入（用email + password）
+export const guardianLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "缺少郵箱或密碼" });
+    }
+
+    // 查家長（解密email同password嚟匹配）
+    const guardians = await db.raw(
+      `SELECT id, first_name, last_name,
+       CAST(AES_DECRYPT(email, ?) AS CHAR) as decrypted_email,
+       CAST(AES_DECRYPT(password, ?) AS CHAR) as decrypted_password
+       FROM guardians`,
+      [config.AES_KEY, config.AES_KEY]
+    );
+
+    // 喺結果入面搵匹配嘅email
+    const guardian = guardians[0].find(g => g.decrypted_email === email);
+
+    if (!guardian || guardian.decrypted_password !== password) {
+      return res.status(401).json({ success: false, message: "郵箱或密碼錯咗" });
+    }
+
+    // 用signed cookie防止被篡改
+    res.cookie("userId", guardian.id, {
+      httpOnly: true,
+      signed: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
+    res.cookie("userType", "guardian", {
+      httpOnly: true,
+      signed: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: guardian.id,
+        name: `${guardian.first_name} ${guardian.last_name}`,
+        type: "guardian",
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // 登出
 export const logout = (req, res) => {
   res.clearCookie("userId");
@@ -150,13 +204,20 @@ export const getCurrentUser = async (req, res) => {
         department: staff.department,
         type: "staff",
       };
-    } else {
+    } else if (type === "student") {
       const student = await db("students").where({ id }).first();
       userData = {
         id: student.id,
         name: `${student.first_name} ${student.last_name}`,
         enrollment_year: student.enrollment_year,
         type: "student",
+      };
+    } else if (type === "guardian") {
+      const guardian = await db("guardians").where({ id }).first();
+      userData = {
+        id: guardian.id,
+        name: `${guardian.first_name} ${guardian.last_name}`,
+        type: "guardian",
       };
     }
 
