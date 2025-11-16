@@ -118,3 +118,95 @@ export const deleteGuardian = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getMyChildren = async (req, res) => {
+  try {
+    const guardianId = req.user.id;
+
+    const result = await db.raw(
+      `SELECT id, last_name, first_name, gender,
+       CAST(AES_DECRYPT(identification_number, ?) AS CHAR) as identification_number,
+       CAST(AES_DECRYPT(address, ?) AS CHAR) as address,
+       CAST(AES_DECRYPT(email, ?) AS CHAR) as email,
+       CAST(AES_DECRYPT(phone, ?) AS CHAR) as phone,
+       enrollment_year, guardian_id, guardian_relation
+       FROM students
+       WHERE guardian_id = ?`,
+      [config.AES_KEY, config.AES_KEY, config.AES_KEY, config.AES_KEY, guardianId]
+    );
+
+    res.status(200).json({ success: true, data: result[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getMyChildById = async (req, res) => {
+  try {
+    const guardianId = req.user.id;
+    const { studentId } = req.params;
+
+    const result = await db.raw(
+      `SELECT id, last_name, first_name, gender,
+       CAST(AES_DECRYPT(identification_number, ?) AS CHAR) as identification_number,
+       CAST(AES_DECRYPT(address, ?) AS CHAR) as address,
+       CAST(AES_DECRYPT(email, ?) AS CHAR) as email,
+       CAST(AES_DECRYPT(phone, ?) AS CHAR) as phone,
+       enrollment_year, guardian_id, guardian_relation
+       FROM students
+       WHERE id = ? AND guardian_id = ?`,
+      [config.AES_KEY, config.AES_KEY, config.AES_KEY, config.AES_KEY, studentId, guardianId]
+    );
+
+    const student = result[0][0];
+
+    if (!student) {
+      return res.status(404).json({ success: false, message: "学生不存在或不屬於該監護人" });
+    }
+
+    res.status(200).json({ success: true, data: student });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getMyChildGrades = async (req, res) => {
+  try {
+    const guardianId = req.user.id;
+    const { studentId } = req.params;
+
+    const result = await db.raw(
+      `SELECT g.id, g.student_id, g.course_id, g.term,
+       CAST(AES_DECRYPT(g.grade, ?) AS CHAR) as grade,
+       CAST(AES_DECRYPT(g.comments, ?) AS CHAR) as comments
+       FROM grades g
+       JOIN students s ON s.id = g.student_id
+       WHERE g.student_id = ? AND s.guardian_id = ?`,
+      [config.AES_KEY, config.AES_KEY, studentId, guardianId]
+    );
+
+    res.status(200).json({ success: true, data: result[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getMyChildDisciplinaryRecords = async (req, res) => {
+  try {
+    const guardianId = req.user.id;
+    const { studentId } = req.params;
+
+    const result = await db.raw(
+      `SELECT d.id, d.student_id, d.date, d.staff_id,
+       CAST(AES_DECRYPT(d.descriptions, ?) AS CHAR) as descriptions
+       FROM disciplinary_records d
+       JOIN students s ON s.id = d.student_id
+       WHERE d.student_id = ? AND s.guardian_id = ?`,
+      [config.AES_KEY, studentId, guardianId]
+    );
+
+    res.status(200).json({ success: true, data: result[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

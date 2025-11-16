@@ -25,6 +25,8 @@ export const authenticate = async (req, res, next) => {
       user = await db("staffs").where({ id: userId }).first();
     } else if (userType === "student") {
       user = await db("students").where({ id: userId }).first();
+    } else if (userType === "guardian") {
+      user = await db("guardians").where({ id: userId }).first();
     }
 
     if (!user) {
