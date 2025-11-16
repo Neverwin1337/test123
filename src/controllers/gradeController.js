@@ -17,6 +17,7 @@ export const getAllGrades = async (req, res) => {
 };
 
 export const getGradeById = async (req, res) => {
+  console.log(req)
   try {
     const { id } = req.params;
     const result = await db.raw(
@@ -105,9 +106,8 @@ export const editGrade = async (req, res) => {
 };
 
 export const getGradeByStudentAndCourse = async (req, res) => {
-  console.log(req.query)
   try {
-    const { student_id, course_id } = req.query;
+    const { student_id, course_id } = req.body;
     
     if (!student_id || !course_id) {
       return res.status(400).json({ success: false, message: "缺少 student_id 或 course_id" });
@@ -120,11 +120,11 @@ export const getGradeByStudentAndCourse = async (req, res) => {
        FROM grades WHERE student_id = ? AND course_id = ?`,
       [config.AES_KEY, config.AES_KEY, student_id, course_id]
     );
-
+    console.log(result)
     const grade = result[0][0];
 
     if (!grade) {
-      return res.status(404).json({ success: false, message: "成绩不存在" });
+      return res.status(404).json({ success: false, message: "成绩不存在11" });
     }
 
     res.status(200).json({ success: true, data: grade });

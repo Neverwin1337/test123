@@ -20,7 +20,7 @@ router.post("/AddGrading", authenticate, requireRole("ARO"), addGrade);
 // 改成績 - 淨係ARO先得
 router.post("/EditGrading", authenticate, requireRole("ARO"), editGrade);
 // 透過學生同課程攞單個成績 - 淨係ARO先得
-router.get("/by-student-course", authenticate, requireRole("ARO"), getGradeByStudentAndCourse);
+router.post("/by-student-course", authenticate, requireRole("ARO"), getGradeByStudentAndCourse);
 // 刪成績 - 淨係ARO先得
 router.delete("/DeleteGrading/:id", authenticate, requireRole("ARO"), deleteGrade);
 
