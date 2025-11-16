@@ -313,8 +313,27 @@ async function testStaffWithARO() {
   }
 }
 
+async function testGetGradeByStudentAndCourse() {
+  logSection('測試 15: ARO根據學生+課程查成績');
+
+  // 假設上一個測試已經用ARO登入，cookies仍然有效
+  const result = await request('GET', '/grades/by-student-course?student_id=1&course_id=1');
+
+  if (result.status === 200 && result.data.success) {
+    const grade = result.data.data;
+    log('PASS', `成功根據學生+課程查到成績: student_id=${grade.student_id}, course_id=${grade.course_id}, grade=${grade.grade}`);
+    return true;
+  } else if (result.status === 404) {
+    log('FAIL', '查詢失敗: 成績不存在（請確認testdata.sql是否已導入，且有student_id=1, course_id=1的記錄）');
+    return false;
+  } else {
+    log('FAIL', `查詢失敗: ${result.data?.message || result.error}`);
+    return false;
+  }
+}
+
 async function testStaffWithDRO() {
-  logSection('測試 15: DRO員工訪問紀律記錄');
+  logSection('測試 16: DRO員工訪問紀律記錄');
   
   // 重新用Master Key登入
   cookies = '';
@@ -454,6 +473,7 @@ ${colors.reset}`);
     
     // 測試角色權限
     results.push(await testStaffWithARO());
+    results.push(await testGetGradeByStudentAndCourse());
     results.push(await testStaffWithDRO());
     results.push(await testAROAccessDisciplinary());
     

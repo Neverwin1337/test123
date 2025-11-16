@@ -1,7 +1,7 @@
 # 🏗️ 代碼結構文檔
 
 學生管理系統的完整代碼結構說明。
-
+curl -X GET "http://localhost:3000/api/grades/by-student-course?student_id=1&course_id=1"-H "Cookie: userId=s%3A1.yQdeJ1s4GsXb%2FbxjrNeDrVoLVUdFleHogFcbmR05ouE; userType=s%3Astaff.SwDlaK0qA4lvZHTqjqokxt38rBJSIQnX4zzXagkj1lg"
 ---
 
 ## 📂 項目目錄結構

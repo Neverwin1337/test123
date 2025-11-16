@@ -105,9 +105,10 @@ export const editGrade = async (req, res) => {
 };
 
 export const getGradeByStudentAndCourse = async (req, res) => {
+  console.log(req.query)
   try {
     const { student_id, course_id } = req.query;
-
+    
     if (!student_id || !course_id) {
       return res.status(400).json({ success: false, message: "缺少 student_id 或 course_id" });
     }
