@@ -104,6 +104,34 @@ export const editGrade = async (req, res) => {
   }
 };
 
+export const getGradeByStudentAndCourse = async (req, res) => {
+  try {
+    const { student_id, course_id } = req.query;
+
+    if (!student_id || !course_id) {
+      return res.status(400).json({ success: false, message: "缺少 student_id 或 course_id" });
+    }
+
+    const result = await db.raw(
+      `SELECT id, student_id, course_id, term,
+       CAST(AES_DECRYPT(grade, ?) AS CHAR) as grade,
+       CAST(AES_DECRYPT(comments, ?) AS CHAR) as comments
+       FROM grades WHERE student_id = ? AND course_id = ?`,
+      [config.AES_KEY, config.AES_KEY, student_id, course_id]
+    );
+
+    const grade = result[0][0];
+
+    if (!grade) {
+      return res.status(404).json({ success: false, message: "成绩不存在" });
+    }
+
+    res.status(200).json({ success: true, data: grade });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const deleteGrade = async (req, res) => {
   try {
     const { id } = req.params;
