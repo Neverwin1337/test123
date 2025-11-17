@@ -42,7 +42,7 @@ async function guardianLoginAndGetCookie() {
 
 async function testGuardianMyChildren() {
   const cookie = await guardianLoginAndGetCookie();
-  const url = `${BASE_URL}/guardians/my/children`;
+  const url = `${BASE_URL}/guardians/my/children/1/grades`;
 
   const res = await fetch(url, {
     method: 'GET',

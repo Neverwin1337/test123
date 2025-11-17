@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Login</title>
+  <link rel="icon" href="data:," />
+  <style>
+    .wapper {
+      width: 100%;
+      height: 100%;
+      background-color: #f0f0f0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .type-section,
+    .role-section {
+      display: none;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+    }
+
+    .user-info {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      max-width: 500px;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .form-group textarea {
+      height: 80px;
+      resize: none;
+    }
+
+    .form-buttons {
+      margin-top: 10px;
+    }
+
+    .form-buttons button {
+      margin-right: 10px;
+      padding: 10px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-buttons {
+      margin-top: 20px;
+    }
+
+    .submit-btn {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .cancel-btn {
+      background-color: #6c757d;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .message {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+
+    .message.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .message.warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wapper">
+    <div class="user-info">
+      <div>
+        <!-- top show name and type -->
+        <h2 id="welcomeMessage">Welcome!</h2>
+        <p id="userType">Type: Loading...</p>
+      </div>
+      <button type="button" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- staff section -->
+    <div id="staff-section" class="type-section">
+      <h2>Staff</h2>
+      <div class="button-container buttons">
+        <button type="button" id="staff_Adding" onclick="openStaffQuery()">Query</button>
+        <button type="button" id="staff_deleting" onclick="openStaffUpdate()">Update</button>
+        <button type="button" onclick="loadMyInfo()">Load My Info</button>
+      </div>
+
+      <!-- query staff info base on staff id-->
+      <div id="staffQueryForm" class="form-container" style="display: none">
+        <h3>Query Staff Information</h3>
+        <div class="form-group">
+          <label for="query_staff_id">Staff ID:</label>
+          <input type="text" id="query_staff_id" name="staff_id" />
+        </div>
+        <div class="form-buttons">
+          <button type="button" class="submit-btn" onclick="queryStaffInfo()">Query</button>
+          <button type="button" class="cancel-btn" onclick="closeStaffQuery()">Cancel</button>
+        </div>
+        <div id="staffQueryMessage" class="message"></div>
+      </div>
+
+      <!-- update staff info -->
+      <div id="staffUpdateForm" class="form-container" style="display: none">
+        <h3>Update Personal Information</h3>
+        <form id="staffInfoForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="staff_id">ID:</label>
+              <input type="text" id="staff_id" name="id" />
+            </div>
+            <div class="form-group">
+              <label for="staff_password">New Password:</label>
+              <input type="password" id="staff_password" name="password"
+                placeholder="Leave blank to keep current password" />
+              <small>Only fill if you want to change password</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="staff_first_name">First Name:</label>
+              <input type="text" id="staff_first_name" name="first_name" />
+            </div>
+            <div class="form-group">
+              <label for="staff_last_name">Last Name:</label>
+              <input type="text" id="staff_last_name" name="last_name" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="staff_gender">Gender:</label>
+            <select id="staff_gender" name="gender">
+              <option value="">Select Gender</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="staff_identification_number">Identification Number:</label>
+            <input type="text" id="staff_identification_number" name="identification_number" />
+          </div>
+
+          <div class="form-group">
+            <label for="staff_address">Address:</label>
+            <input type="text" id="staff_address" name="address" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="staff_email">Email:</label>
+              <input type="email" id="staff_email" name="email" />
+            </div>
+            <div class="form-group">
+              <label for="staff_phone">Phone:</label>
+              <input type="text" id="staff_phone" name="phone" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="staff_department">Department:</label>
+              <input type="text" id="staff_department" name="department" />
+            </div>
+            <div class="form-group">
+              <label for="staff_role">Role:</label>
+              <input type="text" id="staff_role" name="role" readonly />
+            </div>
+          </div>
+
+          <div class="form-buttons">
+            <button type="button" class="submit-btn" onclick="updateStaffInfo()">Update</button>
+            <button type="button" class="cancel-btn" onclick="closeStaffUpdate()">Cancel</button>
+          </div>
+        </form>
+        <div id="staffInfoMessage" class="message"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- student section -->
+  <div id="student-section" class="type-section">
+    <h2>Student </h2>
+    <div class="button-container buttons">
+      <button type="button" onclick="openStudentInfo()">My Information</button>
+      <button type="button" onclick="openStudentGrades()">My Grades</button>
+      <button type="button" onclick="openStudentDisciplinary()">Disciplinary Records</button>
+      <button type="button" onclick="openStudentUpdate()">Update Information</button>
+    </div>
+
+    <!-- get student info -->
+    <div id="studentInfoForm" class="form-container" style="display: none">
+      <h3>My Personal Information</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="student_id">Student ID:</label>
+          <input type="text" id="student_id" name="id" readonly />
+        </div>
+        <div class="form-group">
+          <label for="student_enrollment_year">Enrollment Year:</label>
+          <input type="text" id="student_enrollment_year" name="enrollment_year" readonly />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="student_last_name">Last Name:</label>
+          <input type="text" id="student_last_name" name="last_name" readonly />
+        </div>
+        <div class="form-group">
+          <label for="student_first_name">First Name:</label>
+          <input type="text" id="student_first_name" name="first_name" readonly />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="student_gender">Gender:</label>
+        <input type="text" id="student_gender" name="gender" readonly />
+      </div>
+
+      <div class="form-group">
+        <label for="student_identification_number">Identification Number:</label>
+        <input type="text" id="student_identification_number" name="identification_number" readonly />
+      </div>
+
+      <div class="form-group">
+        <label for="student_address">Address:</label>
+        <input type="text" id="student_address" name="address" readonly />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="student_email">Email:</label>
+          <input type="email" id="student_email" name="email" readonly />
+        </div>
+        <div class="form-group">
+          <label for="student_phone">Phone:</label>
+          <input type="text" id="student_phone" name="phone" readonly />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="student_guardian_id">Guardian ID:</label>
+          <input type="text" id="student_guardian_id" name="guardian_id" readonly />
+        </div>
+        <div class="form-group">
+          <label for="student_guardian_relation">Guardian Relation:</label>
+          <input type="text" id="student_guardian_relation" name="guardian_relation" readonly />
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        <button type="button" class="cancel-btn" onclick="closeStudentInfo()">
+          Close
+        </button>
+      </div>
+    </div>
+
+    <!-- get student grade -->
+    <div id="studentGradesForm" class="form-container" style="display: none">
+      <h3>My Grade Records</h3>
+      <div id="studentGradesMessage" class="message"></div>
+      <div id="studentGradesResults" class="message"></div>
+    </div>
+
+    <!-- get student discip -->
+    <div id="studentDisciplinaryForm" class="form-container" style="display: none">
+      <h3>My Disciplinary Records</h3>
+      <div id="studentDisciplinaryMessage" class="message"></div>
+      <div id="studentDisciplinaryResults" class="message"></div>
+    </div>
+
+    <!-- update student info -->
+    <div id="studentUpdateForm" class="form-container" style="display: none">
+      <h3>Update Personal Information</h3>
+      <form id="studentInfoUpdateForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="update_student_password">New Password:</label>
+            <input type="password" id="update_student_password" name="password"
+              placeholder="Leave blank to keep current password" />
+            <small>Only fill if you want to change password</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="update_student_last_name">Last Name:</label>
+            <input type="text" id="update_student_last_name" name="last_name" />
+          </div>
+          <div class="form-group">
+            <label for="update_student_first_name">First Name:</label>
+            <input type="text" id="update_student_first_name" name="first_name" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="update_student_gender">Gender:</label>
+          <select id="update_student_gender" name="gender">
+            <option value="">Select Gender</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+            <option value="O">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="update_student_identification_number">Identification Number:</label>
+          <input type="text" id="update_student_identification_number" name="identification_number" />
+        </div>
+
+        <div class="form-group">
+          <label for="update_student_address">Address:</label>
+          <input type="text" id="update_student_address" name="address" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="update_student_email">Email:</label>
+            <input type="email" id="update_student_email" name="email" />
+          </div>
+          <div class="form-group">
+            <label for="update_student_phone">Phone:</label>
+            <input type="text" id="update_student_phone" name="phone" />
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="submit-btn" onclick="updateStudentInfo()">
+            Update Information
+          </button>
+        </div>
+      </form>
+      <div id="studentUpdateMessage" class="message"></div>
+    </div>
+  </div>
+
+  <!-- guardian section -->
+  <div id="guardian-section" class="type-section">
+    <h2>Guardian </h2>
+    <div class="button-container buttons">
+      <button type="button" onclick="openGuardianInfo()">My Information</button>
+      <button type="button" onclick="openChildGrades()">Child's Grades</button>
+      <button type="button" onclick="openChildDisciplinary()">Child's Disciplinary Records</button>
+      <button type="button" onclick="openGuardianUpdate()">Update Information</button>
+    </div>
+
+    <!-- show guardian info -->
+    <div id="guardianInfoForm" class="form-container" style="display: none">
+      <h3>My Personal Information</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="guardian_id">Guardian ID:</label>
+          <input type="text" id="guardian_id" name="id" readonly />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="guardian_last_name">Last Name:</label>
+          <input type="text" id="guardian_last_name" name="last_name" readonly />
+        </div>
+        <div class="form-group">
+          <label for="guardian_first_name">First Name:</label>
+          <input type="text" id="guardian_first_name" name="first_name" readonly />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="guardian_email">Email:</label>
+          <input type="email" id="guardian_email" name="email" readonly />
+        </div>
+        <div class="form-group">
+          <label for="guardian_phone">Phone:</label>
+          <input type="text" id="guardian_phone" name="phone" readonly />
+        </div>
+      </div>
+    </div>
+
+    <!-- check child grade -->
+    <div id="childGradesForm" class="form-container" style="display: none">
+      <h3>My Child's Grade Records</h3>
+      <div id="childGradesMessage" class="message"></div>
+      <div id="childGradesResults" class="message"></div>
+    </div>
+
+    <!-- check child discip -->
+    <div id="childDisciplinaryForm" class="form-container" style="display: none">
+      <h3>My Child's Disciplinary Records</h3>
+      <div id="childDisciplinaryMessage" class="message"></div>
+      <div id="childDisciplinaryResults" class="message"></div>
+    </div>
+
+    <!-- update guardian info -->
+    <div id="guardianUpdateForm" class="form-container" style="display: none">
+      <h3>Update Personal Information</h3>
+      <form id="guardianInfoUpdateForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="update_guardian_password">New Password:</label>
+            <input type="password" id="update_guardian_password" name="password"
+              placeholder="Leave blank to keep current password" />
+            <small>Only fill if you want to change password</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="update_guardian_last_name">Last Name:</label>
+            <input type="text" id="update_guardian_last_name" name="last_name" />
+          </div>
+          <div class="form-group">
+            <label for="update_guardian_first_name">First Name:</label>
+            <input type="text" id="update_guardian_first_name" name="first_name" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="update_guardian_email">Email:</label>
+            <input type="email" id="update_guardian_email" name="email" />
+          </div>
+          <div class="form-group">
+            <label for="update_guardian_phone">Phone:</label>
+            <input type="text" id="update_guardian_phone" name="phone" />
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="submit-btn" onclick="updateGuardianInfo()">
+            Update Information
+          </button>
+        </div>
+      </form>
+      <div id="guardianUpdateMessage" class="message"></div>
+    </div>
+  </div>
+
+  <!-- aro section -->
+  <div id="aro-section" class="role-section" style="display: none;">
+    <h1>ARO Function:</h1>
+
+    <div class="button-container buttons">
+      <button type="button" id="aro_Adding" onclick="openAdding()">Adding</button>
+      <button type="button" id="aro_deleting" onclick="openDeleting()">Deleting</button>
+      <button type="button" id="aro_querying" onclick="openQuerying()">Querying</button>
+      <button type="button" id="aro_modifying" onclick="openModifying()">Modifying</button>
+    </div>
+
+    <!-- add/create  grade -->
+    <div id="addingForm" class="form-container" style="display: none">
+      <h2>Add New Grade Record</h2>
+      <form id="adding_gradeForm">
+        <div class="form-group">
+          <label for="add_student_id">Student ID:</label>
+          <input type="text" id="add_student_id" name="student_id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="add_course_id">Course ID:</label>
+          <input type="text" id="add_course_id" name="course_id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="add_term">Term:</label>
+          <input type="text" id="add_term" name="term" placeholder="e.g., 202526S1" required />
+        </div>
+
+        <div class="form-group">
+          <label for="add_grade">Grade:</label>
+          <select id="add_grade" name="grade" required>
+            <option value="">Select Grade</option>
+            <option value="A+">A+</option>
+            <option value="A">A</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B">B</option>
+            <option value="B-">B-</option>
+            <option value="C+">C+</option>
+            <option value="C">C</option>
+            <option value="C-">C-</option>
+            <option value="D+">D+</option>
+            <option value="D">D</option>
+            <option value="D-">D-</option>
+            <option value="F">F</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="add_comments">Comments:</label>
+          <textarea id="add_comments" name="comments" placeholder="Enter comments"></textarea>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="submit-btn" onclick="submitGrade()">
+            Submit
+          </button>
+          <button type="button" class="cancel-btn" onclick="closeAdding()">
+            Cancel
+          </button>
+        </div>
+      </form>
+      <div id="add_formMessage" class="message"></div>
+    </div>
+
+    <!-- delete grade base on record id -->
+    <div id="deleteForm" class="form-container" style="display: none">
+      <h2>Delete Grade Record by ID</h2>
+      <div class="form-group">
+        <label for="delete_record_id">Record ID to Delete:</label>
+        <input type="number" id="delete_record_id" name="record_id" placeholder="Enter grade record ID" required />
+      </div>
+
+      <div class="form-buttons">
+        <button type="button" class="cancel-btn" onclick="deleteRecord()">
+          Delete Record
+        </button>
+      </div>
+      <div id="delete_formMessage" class="message"></div>
+    </div>
+
+    <!-- query grade base on record id/ student id/ course id / student id + course id -->
+    <div id="queryingForm" class="form-container" style="display: none">
+      <h2>Query Grade Records</h2>
+      <div class="form-group">
+        <label for="querying_record_id">Record ID to querying:</label>
+        <input type="text" id="querying_record_id" name="record_id" placeholder="Enter grade record ID" />
+      </div>
+      <div class="form-group">
+        <label for="querying_student_id">Student ID to querying:</label>
+        <input type="text" id="querying_student_id" name="student_id" placeholder="Enter student ID" />
+      </div>
+      <div class="form-group">
+        <label for="querying_course_id">Course ID to querying:</label>
+        <input type="text" id="querying_course_id" name="course_id" placeholder="Enter course ID" />
+      </div>
+
+      <div class="form-buttons">
+        <button type="button" class="submit-btn" onclick="queryingRecord()">
+          Query Record
+        </button>
+      </div>
+      <div id="query_formMessage" class="message"></div>
+    </div>
+
+    <!-- modify grade -->
+    <div id="modifyingForm" class="form-container" style="display: none">
+      <h2>Modify Grade Record</h2>
+      <form id="modify_gradeForm">
+        <div class="form-group">
+          <label for="modify_record_id">Grade Record ID:</label>
+          <input type="text" id="modify_record_id" name="record_id" required />
+        </div>
+        <div class="form-group">
+          <label for="modify_student_id">Student ID:</label>
+          <input type="text" id="modify_student_id" name="student_id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modify_course_id">Course ID:</label>
+          <input type="text" id="modify_course_id" name="course_id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modify_term">Term:</label>
+          <input type="text" id="modify_term" name="term" placeholder="e.g., 202526S1" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modify_grade">Grade:</label>
+          <select id="modify_grade" name="grade" required>
+            <option value="">Select Grade</option>
+            <option value="A+">A+</option>
+            <option value="A">A</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B">B</option>
+            <option value="B-">B-</option>
+            <option value="C+">C+</option>
+            <option value="C">C</option>
+            <option value="C-">C-</option>
+            <option value="D+">D+</option>
+            <option value="D">D</option>
+            <option value="D-">D-</option>
+            <option value="F">F</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="modify_comments">Comments:</label>
+          <textarea id="modify_comments" name="comments" placeholder="Enter comments"></textarea>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="submit-btn" onclick="modifyingRecord()">
+            Modify
+          </button>
+        </div>
+      </form>
+
+      <div id="modify_formMessage" class="message"></div>
+    </div>
+  </div>
+
+
+  <!-- dro section -->
+  <div id="dro-section" class="role-section" style="display: none;">
+    <h3>DRO </h3>
+    <div class="button-container buttons">
+      <button type="button" onclick="openDROAdding()">Add Disciplinary Record</button>
+      <button type="button" onclick="openDRODeleting()">Delete Disciplinary Record</button>
+      <button type="button" onclick="openDROQuerying()">Query Disciplinary Records</button>
+      <button type="button" onclick="openDROModifying()">Modify Disciplinary Record</button>
+    </div>
+
+    <!-- add discip -->
+    <div id="droAddingForm" class="form-container" style="display: none">
+      <h3>Add New Disciplinary Record</h3>
+      <form id="disciplinaryForm">
+        <div class="form-group">
+          <label for="add_disciplinary_student_id">Student ID:</label>
+          <input type="text" id="add_disciplinary_student_id" name="student_id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="add_disciplinary_date">Date:</label>
+          <input type="text" id="add_disciplinary_date" name="date" placeholder="DD/MM/YYYY" required />
+        </div>
+
+        <div class="form-group">
+          <label for="add_disciplinary_staff_id">Responsible Staff ID:</label>
+          <input type="text" id="add_disciplinary_staff_id" name="staff_id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="add_disciplinary_descriptions">Case Description:</label>
+          <textarea id="add_disciplinary_descriptions" name="descriptions" placeholder="Enter case description"
+            required></textarea>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="submit-btn" onclick="submitDisciplinaryRecord()">
+            Submit
+          </button>
+
+        </div>
+      </form>
+      <div id="dro_add_formMessage" class="message"></div>
+    </div>
+
+    <!-- delete discip -->
+    <div id="droDeleteForm" class="form-container" style="display: none">
+      <h3>Delete Disciplinary Record</h3>
+      <div class="form-group">
+        <label for="delete_disciplinary_id">Record ID to Delete:</label>
+        <input type="number" id="delete_disciplinary_id" name="record_id" placeholder="Enter disciplinary record ID"
+          required />
+      </div>
+
+      <div class="form-buttons">
+        <button type="button" class="cancel-btn" onclick="deleteDisciplinaryRecord()">
+          Delete Record
+        </button>
+
+      </div>
+      <div id="dro_delete_formMessage" class="message"></div>
+    </div>
+
+    <!-- query discip base on record id/staff id/ student id -->
+    <div id="droQueryingForm" class="form-container" style="display: none">
+      <h3>Query Disciplinary Records</h3>
+      <div class="form-group">
+        <label for="querying_disciplinary_id">Record ID:</label>
+        <input type="text" id="querying_disciplinary_id" name="record_id" placeholder="Enter disciplinary record ID" />
+      </div>
+      <div class="form-group">
+        <label for="querying_disciplinary_student_id">Student ID:</label>
+        <input type="text" id="querying_disciplinary_student_id" name="student_id" placeholder="Enter student ID" />
+      </div>
+      <div class="form-group">
+        <label for="querying_disciplinary_staff_id">Staff ID:</label>
+        <input type="text" id="querying_disciplinary_staff_id" name="staff_id" placeholder="Enter staff ID" />
+      </div>
+
+      <div class="form-buttons">
+        <button type="button" class="submit-btn" onclick="queryDisciplinaryRecords()">
+          Query Records
+        </button>
+
+      </div>
+      <div id="dro_query_formMessage" class="message"></div>
+    </div>
+
+    <!-- modify discip -->
+    <div id="droModifyingForm" class="form-container" style="display: none">
+      <h3>Modify Disciplinary Record</h3>
+      <form id="disciplinaryModifyForm">
+        <div class="form-group">
+          <label for="modify_disciplinary_id">Record ID:</label>
+          <input type="text" id="modify_disciplinary_id" name="id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modify_disciplinary_student_id">Student ID:</label>
+          <input type="text" id="modify_disciplinary_student_id" name="student_id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modify_disciplinary_date">Date:</label>
+          <input type="text" id="modify_disciplinary_date" name="date" placeholder="DD/MM/YYYY" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modify_disciplinary_staff_id">Responsible Staff ID:</label>
+          <input type="text" id="modify_disciplinary_staff_id" name="staff_id" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modify_disciplinary_descriptions">Case Description:</label>
+          <textarea id="modify_disciplinary_descriptions" name="descriptions" placeholder="Enter case description"
+            required></textarea>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="submit-btn" onclick="modifyDisciplinaryRecord()">
+            Update Record
+          </button>
+
+        </div>
+      </form>
+      <div id="dro_modify_formMessage" class="message"></div>
+    </div>
+  </div>
+
+
+
+
+
+  <script>
+    let currentUser = null;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initializePage();
+    });
+
+    // initialize page on load
+    function initializePage() {
+      const storedUserData = sessionStorage.getItem("userData");
+
+      if (storedUserData) {
+        currentUser = JSON.parse(storedUserData);
+        console.log("Current user data:", currentUser);
+        displayUserInfo();
+        showRoleSection(currentUser.type, currentUser.role);
+      } else {
+        window.location.href = "login_page.html";
+      }
+    }
+
+    function displayUserInfo() {
+      document.getElementById(
+        "welcomeMessage"
+      ).textContent = `Welcome, ${currentUser.name}!`;
+      document.getElementById(
+        "userType"
+      ).textContent = `Type: ${currentUser.type.toUpperCase()}`;
+    }
+
+    function showRoleSection(type, role) {
+      // hide all role sections
+      document
+        .querySelectorAll(".type-section, .role-section")
+        .forEach((section) => {
+          section.style.display = "none";
+        });
+
+      // show the section based on type
+      const typeSection = document.getElementById(type + "-section");
+      if (typeSection) {
+        typeSection.style.display = "block";
+      }
+
+      // show the section based on role
+      if (role) {
+        const roleSection = document.getElementById(
+          role.toLowerCase() + "-section"
+        );
+        if (roleSection) {
+          roleSection.style.display = "block";
+        }
+      }
+    }
+
+    //logout
+    async function logout() {
+      try {
+        await fetch("/api/auth/logout", { method: "POST" });
+        sessionStorage.removeItem("userData");
+        window.location.href = "login_page.html";
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    }
+
+    // staff part
+    function openStaffQuery() {
+      document.getElementById("staffQueryForm").style.display = "block";
+      document.getElementById("staffUpdateForm").style.display = "none";
+      document.getElementById("staffQueryMessage").textContent = "";
+    }
+
+    function closeStaffQuery() {
+      document.getElementById("staffQueryForm").style.display = "none";
+    }
+
+
+    // querying staff info
+    async function queryStaffInfo() {
+      // get user input (staff id)
+      const queryStaffId = document.getElementById("query_staff_id").value;
+
+      if (!queryStaffId) {
+        showMessage("staffQueryMessage", "Please enter a Staff ID", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/staffs/${queryStaffId}`);
+        const data = await response.json();
+
+        // get staff info
+        if (data.success) {
+          const staff = data.data;
+          document.getElementById("staff_id").value = staff.id || "";
+          document.getElementById("staff_first_name").value =
+            staff.first_name || "";
+          document.getElementById("staff_last_name").value =
+            staff.last_name || "";
+          document.getElementById("staff_gender").value = staff.gender || "";
+          document.getElementById("staff_identification_number").value =
+            staff.identification_number || "";
+          document.getElementById("staff_address").value =
+            staff.address || "";
+          document.getElementById("staff_email").value = staff.email || "";
+          document.getElementById("staff_phone").value = staff.phone || "";
+          document.getElementById("staff_department").value =
+            staff.department || "";
+          document.getElementById("staff_role").value = staff.role || "";
+
+          showMessage("staffQueryMessage", "Information loaded successfully", "success");
+
+          openStaffUpdate();
+        } else {
+          showMessage(
+            "staffInfoMessage",
+            "Failed to load staff information",
+            "error"
+          );
+        }
+      } catch (error) {
+        console.error("Error loading staff info:", error);
+        showMessage("staffInfoMessage", "Error loading information", "error");
+      }
+    }
+
+
+
+    function openStaffUpdate() {
+      document.getElementById("staffUpdateForm").style.display = "block";
+      document.getElementById("staffQueryForm").style.display = "none";
+    }
+
+    //get staff(user) info
+    function loadMyInfo() {
+      document.getElementById("query_staff_id").value = currentUser.id;
+      queryStaffInfo();
+    }
+
+    function closeStaffUpdate() {
+      document.getElementById("staffUpdateForm").style.display = "none";
+    }
+
+
+    // update staff info
+    async function updateStaffInfo() {
+      const password = document.getElementById("staff_password").value;
+      const queryStaffId = document.getElementById("query_staff_id").value;
+      if (password) {
+        const password_confirm = prompt(
+          "Please enter your new password again:"
+        );
+        if (password !== password_confirm) {
+          showMessage(
+            "staffInfoMessage",
+            "Password confirmation does not match",
+            "error"
+          );
+          return;
+        }
+      }
+      const formData = {
+        id: document.getElementById("staff_id").value,
+        first_name: document.getElementById("staff_first_name").value,
+        last_name: document.getElementById("staff_last_name").value,
+        gender: document.getElementById("staff_gender").value,
+        identification_number: document.getElementById(
+          "staff_identification_number"
+        ).value,
+        address: document.getElementById("staff_address").value,
+        email: document.getElementById("staff_email").value,
+        phone: document.getElementById("staff_phone").value,
+      };
+
+      if (password && password_confirm) {
+        formData.password = password_confirm;
+      }
+      const messageDiv = document.getElementById("staffInfoMessage");
+      if (
+        !formData.first_name ||
+        !formData.last_name ||
+        !formData.email ||
+        !formData.phone ||
+        !formData.identification_number ||
+        !formData.address ||
+        !formData.gender
+      ) {
+        showMessage(
+          "staffInfoMessage",
+          "Please fill at least one element",
+          "error"
+        );
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/staffs/${queryStaffId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage(
+            "staffInfoMessage",
+            "Information updated successfully",
+            "success"
+          );
+        } else {
+          showMessage(
+            "staffInfoMessage",
+            data.message || "Update failed",
+            "error"
+          );
+        }
+      } catch (error) {
+        console.error("Error updating staff info:", error);
+        showMessage(
+          "staffInfoMessage",
+          "Error updating information",
+          "error"
+        );
+      }
+    }
+
+    function showMessage(elementId, message, type) {
+      const messageDiv = document.getElementById(elementId);
+      messageDiv.textContent = message;
+      messageDiv.className = "message " + type;
+    }
+
+    //student part
+    function closeAllStudentForms() {
+      document.getElementById("studentInfoForm").style.display = "none";
+      document.getElementById("studentGradesForm").style.display = "none";
+      document.getElementById("studentDisciplinaryForm").style.display = "none";
+      document.getElementById("studentUpdateForm").style.display = "none";
+    }
+
+    function openStudentInfo() {
+      closeAllStudentForms();
+      document.getElementById("studentInfoForm").style.display = "block";
+      loadStudentInfo();
+    }
+
+
+    function openStudentGrades() {
+      closeAllStudentForms();
+      document.getElementById("studentGradesForm").style.display = "block";
+      loadStudentGrades();
+    }
+
+    function openStudentDisciplinary() {
+      closeAllStudentForms();
+      document.getElementById("studentDisciplinaryForm").style.display = "block";
+      loadStudentDisciplinary();
+    }
+
+
+    function openStudentUpdate() {
+      closeAllStudentForms();
+      document.getElementById("studentUpdateForm").style.display = "block";
+    }
+
+
+    // get student info
+    async function loadStudentInfo() {
+      try {
+        const response = await fetch(`/api/students/${currentUser.id}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const student = data.data;
+          document.getElementById("student_id").value = student.id || "";
+          document.getElementById("student_last_name").value = student.last_name || "";
+          document.getElementById("student_first_name").value = student.first_name || "";
+          document.getElementById("student_gender").value = student.gender || "";
+          document.getElementById("student_identification_number").value = student.identification_number || "";
+          document.getElementById("student_address").value = student.address || "";
+          document.getElementById("student_email").value = student.email || "";
+          document.getElementById("student_phone").value = student.phone || "";
+          document.getElementById("student_enrollment_year").value = student.enrollment_year || "";
+          document.getElementById("student_guardian_id").value = student.guardian_id || "";
+          document.getElementById("student_guardian_relation").value = student.guardian_relation || "";
+        } else {
+          showMessage("studentInfoMessage", "Failed to load student information", "error");
+        }
+      } catch (error) {
+        console.error("Error loading student info:", error);
+        showMessage("studentInfoMessage", "Error loading information", "error");
+      }
+    }
+
+
+    // load student grade
+    async function loadStudentGrades() {
+      const messageDiv = document.getElementById("studentGradesMessage");
+      const resultsDiv = document.getElementById("studentGradesResults");
+
+      try {
+
+        const response = await fetch(`/api/students/grade/${currentUser.id}`);
+        const data = await response.json();
+
+        if (data.success && data.data && data.data.length > 0) {
+          displayQueryResult(data.data, `Found ${data.data.length} grade records`, "studentGradesResults");
+          messageDiv.innerHTML = '';
+        } else {
+          showMessage("studentGradesMessage", "No grade records found", "warning");
+          resultsDiv.style.display = "none";
+        }
+      } catch (error) {
+        console.error("Error loading student grades:", error);
+        showMessage("studentGradesMessage", "Error loading grade records", "error");
+        resultsDiv.style.display = "none";
+      }
+    }
+
+    // get student discip
+    async function loadStudentDisciplinary() {
+      const messageDiv = document.getElementById("studentDisciplinaryMessage");
+      const resultsDiv = document.getElementById("studentDisciplinaryResults");
+
+      try {
+        const response = await fetch(`/api/students/disciplinary/${currentUser.id}`);
+        const data = await response.json();
+
+        if (data.success && data.data && data.data.length > 0) {
+          displayQueryResult(data.data, `Found ${data.data.length} disciplinary records`, "studentDisciplinaryResults");
+          messageDiv.innerHTML = '';
+        } else {
+          showMessage("studentDisciplinaryMessage", "No disciplinary records found", "warning");
+          resultsDiv.style.display = "none";
+        }
+      } catch (error) {
+        console.error("Error loading student disciplinary records:", error);
+        showMessage("studentDisciplinaryMessage", "Error loading disciplinary records", "error");
+        resultsDiv.style.display = "none";
+      }
+    }
+
+    // update student info
+    async function updateStudentInfo() {
+      const password = document.getElementById("update_student_password").value;
+      const messageDiv = document.getElementById("studentUpdateMessage");
+
+      if (password) {
+        const password_confirm = prompt("Please enter your new password again:");
+        if (password !== password_confirm) {
+          showMessage("studentUpdateMessage", "Password confirmation does not match", "error");
+          return;
+        }
+      }
+
+      const formData = {
+        last_name: document.getElementById("update_student_last_name").value,
+        first_name: document.getElementById("update_student_first_name").value,
+        gender: document.getElementById("update_student_gender").value,
+        identification_number: document.getElementById("update_student_identification_number").value,
+        address: document.getElementById("update_student_address").value,
+        email: document.getElementById("update_student_email").value,
+        phone: document.getElementById("update_student_phone").value,
+      };
+
+      if (password && password_confirm) {
+        formData.password = password_confirm;
+      }
+
+      // check element
+      if (!formData.last_name || !formData.first_name || !formData.email) {
+        showMessage("studentUpdateMessage", "Please fill in all required fields (Name and Email)", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/students/edit/${currentUser.id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("studentUpdateMessage", "Information updated successfully", "success");
+          document.getElementById("update_student_password").value = "";
+        } else {
+          showMessage("studentUpdateMessage", data.message || "Update failed", "error");
+        }
+      } catch (error) {
+        console.error("Error updating student info:", error);
+        showMessage("studentUpdateMessage", "Error updating information", "error");
+      }
+    }
+
+
+
+    // guardian part
+    function closeAllGuardianForms() {
+      document.getElementById("guardianInfoForm").style.display = "none";
+      document.getElementById("childGradesForm").style.display = "none";
+      document.getElementById("childDisciplinaryForm").style.display = "none";
+      document.getElementById("guardianUpdateForm").style.display = "none";
+    }
+
+    function openGuardianInfo() {
+      closeAllGuardianForms();
+      document.getElementById("guardianInfoForm").style.display = "block";
+      loadGuardianInfo();
+    }
+
+
+    function openChildGrades() {
+      closeAllGuardianForms();
+      document.getElementById("childGradesForm").style.display = "block";
+      loadChildGrades();
+    }
+
+
+    function openChildDisciplinary() {
+      closeAllGuardianForms();
+      document.getElementById("childDisciplinaryForm").style.display = "block";
+      loadChildDisciplinary();
+    }
+
+
+    function openGuardianUpdate() {
+      closeAllGuardianForms();
+      document.getElementById("guardianUpdateForm").style.display = "block"
+    }
+
+    // load guardian info
+    async function loadGuardianInfo() {
+      try {
+        const response = await fetch(`/api/guardians/${currentUser.id}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const guardian = data.data;
+          // Fill read-only information form
+          document.getElementById("guardian_id").value = guardian.id || "";
+          document.getElementById("guardian_last_name").value = guardian.last_name || "";
+          document.getElementById("guardian_first_name").value = guardian.first_name || "";
+          document.getElementById("guardian_email").value = guardian.email || "";
+          document.getElementById("guardian_phone").value = guardian.phone || "";
+        } else {
+          showMessage("guardianInfoMessage", "Failed to load guardian information", "error");
+        }
+      } catch (error) {
+        console.error("Error loading guardian info:", error);
+        showMessage("guardianInfoMessage", "Error loading information", "error");
+      }
+    }
+
+
+    // load child grades
+    async function loadChildGrades() {
+      const messageDiv = document.getElementById("childGradesMessage");
+      const resultsDiv = document.getElementById("childGradesResults");
+
+      // clear previous results
+      messageDiv.textContent = "Loading children and grades...";
+      messageDiv.className = "message";
+      resultsDiv.innerHTML = "";
+      resultsDiv.className = "message";
+
+      try {
+        console.log('Current user ID:', currentUser.id);
+        console.log('Fetching children for guardian...');
+
+        // get all the child of guardian
+        const childrenResponse = await fetch('/api/guardians/my/children', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include' // Important for session cookies
+        });
+
+        console.log('Response status:', childrenResponse.status);
+
+        if (!childrenResponse.ok) {
+          const errorText = await childrenResponse.text();
+          console.error('HTTP Error:', childrenResponse.status, errorText);
+          throw new Error(`HTTP ${childrenResponse.status}: ${childrenResponse.statusText}`);
+        }
+
+        const childrenData = await childrenResponse.json();
+        console.log('Children data response:', childrenData);
+
+        if (!childrenData.success) {
+          showMessage("childGradesMessage", `API Error: ${childrenData.message || 'Unknown error'}`, "error");
+          return;
+        }
+
+        if (!childrenData.data || childrenData.data.length === 0) {
+          showMessage("childGradesMessage", "No children found for this guardian", "warning");
+          return;
+        }
+
+        const children = childrenData.data;
+        showMessage("childGradesMessage", `Found ${children.length} children`, "success");
+
+        // Get grades for each child
+        let allGrades = [];
+
+        for (const child of children) {
+          try {
+            console.log(`Loading grades for child: ${child.id}`);
+            const gradesResponse = await fetch(`/api/guardians/my/children/${child.id}/grades`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include'
+            });
+
+            if (gradesResponse.ok) {
+              const gradesData = await gradesResponse.json();
+              console.log(`Grades data for child ${child.id}:`, gradesData);
+
+              if (gradesData.success && gradesData.data) {
+                // Add child information to each grade record
+                const gradesWithChildInfo = gradesData.data.map(grade => ({
+                  ...grade,
+                  child_name: `${child.first_name} ${child.last_name}`,
+                  child_id: child.id
+                }));
+                allGrades = allGrades.concat(gradesWithChildInfo);
+              }
+            } else {
+              console.warn(`Failed to load grades for child ${child.id}:`, gradesResponse.status);
+            }
+          } catch (error) {
+            console.error(`Error loading grades for child ${child.id}:`, error);
+          }
+        }
+
+        // Display all grades
+        if (allGrades.length > 0) {
+          displayQueryResult(allGrades, `Found ${allGrades.length} grade records across all children`, "childGradesResults");
+          showMessage("childGradesMessage", "Grades loaded successfully", "success");
+        } else {
+          showMessage("childGradesMessage", "No grade records found for any child", "warning");
+        }
+
+      } catch (error) {
+        console.error('Error loading children list:', error);
+        showMessage("childGradesMessage", `Error: ${error.message}`, "error");
+      }
+    }
+
+
+
+    // load child discip
+    async function loadChildDisciplinary() {
+      // later do
+    }
+
+    // update guardian info
+    async function updateGuardianInfo() {
+      const password = document.getElementById("update_guardian_password").value;
+      const messageDiv = document.getElementById("guardianUpdateMessage");
+
+      if (password) {
+        const password_confirm = prompt("Please enter your new password again:");
+        if (password !== password_confirm) {
+          showMessage("guardianUpdateMessage", "Password confirmation does not match", "error");
+          return;
+        }
+      }
+
+      const formData = {
+        last_name: document.getElementById("update_guardian_last_name").value,
+        first_name: document.getElementById("update_guardian_first_name").value,
+        email: document.getElementById("update_guardian_email").value,
+        phone: document.getElementById("update_guardian_phone").value,
+      };
+
+      if (password && password_confirm) {
+        formData.password = password_confirm;
+      }
+
+      // check element
+      if (!formData.last_name || !formData.first_name || !formData.email) {
+        showMessage("guardianUpdateMessage", "Please fill in all required fields (Name and Email)", "error");
+        return;
+      }
+
+      try {
+
+        const response = await fetch(`/api/guardians/${currentUser.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("guardianUpdateMessage", "Information updated successfully", "success");
+          document.getElementById("update_guardian_password").value = "";
+        } else {
+          showMessage("guardianUpdateMessage", data.message || "Update failed", "error");
+        }
+      } catch (error) {
+        console.error("Error updating guardian info:", error);
+        showMessage("guardianUpdateMessage", "Error updating information", "error");
+      }
+    }
+
+
+    // ARO part 
+    function closeAROAll() {
+      document.getElementById("addingForm").style.display = "none";
+      document.getElementById("deleteForm").style.display = "none";
+      document.getElementById("queryingForm").style.display = "none";
+      document.getElementById("modifyingForm").style.display = "none";
+    }
+
+    function openAdding() {
+      closeAROAll();
+      document.getElementById("addingForm").style.display = "block";
+      document.getElementById("adding_gradeForm").reset();
+      document.getElementById("add_formMessage").textContent = "";
+      document.getElementById("add_formMessage").className = "message";
+    }
+
+    //create grade
+    async function submitGrade() {
+      const formData = {
+        student_id: document.getElementById("add_student_id").value,
+        course_id: document.getElementById("add_course_id").value,
+        term: document.getElementById("add_term").value,
+        grade: document.getElementById("add_grade").value,
+        comments: document.getElementById("add_comments").value,
+      };
+
+      const messageDiv = document.getElementById("add_formMessage");
+      // check element
+      if (
+        !formData.student_id ||
+        !formData.course_id ||
+        !formData.term ||
+        !formData.grade
+      ) {
+        messageDiv.textContent = "Please fill in all required fields";
+        messageDiv.className = "message error";
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/grades/AddGrading', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("add_formMessage", "Grade added successfully!", "success");
+          document.getElementById("adding_gradeForm").reset();
+        } else {
+          showMessage("add_formMessage", data.message || "Failed to add grade", "error");
+        }
+      } catch (error) {
+        console.error('Error adding grade:', error);
+        showMessage("add_formMessage", "Error adding grade", "error");
+      }
+    }
+
+
+    function openDeleting() {
+      closeAROAll();
+      document.getElementById("deleteForm").style.display = "block";
+      document.getElementById("delete_record_id").reset();
+      document.getElementById("delete_formMessage").textContent = "";
+      document.getElementById("delete_formMessage").className = "message";
+    }
+
+    async function deleteRecord() {
+      const recordId = document.getElementById("delete_record_id").value;
+      const messageDiv = document.getElementById("delete_formMessage");
+
+      if (!recordId) {
+        messageDiv.textContent = "Please enter a record ID";
+        messageDiv.className = "message error";
+        return;
+      }
+
+      // double confirmation
+      const confirmed = confirm(
+        `Are you sure you want to delete record : ${recordId}?\n\nThis action cannot be undone.`
+      );
+
+      if (!confirmed) {
+        messageDiv.textContent = "Deletion cancelled";
+        messageDiv.className = "message warning";
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/grades/DeleteGrading/${recordId}`, {
+          method: 'DELETE',
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("delete_formMessage", "Grade deleted successfully!", "success");
+          document.getElementById("delete_record_id").value = "";
+        } else {
+          showMessage("delete_formMessage", data.message || "Failed to delete grade", "error");
+        }
+      } catch (error) {
+        console.error('Error deleting grade:', error);
+        showMessage("delete_formMessage", "Error deleting grade", "error");
+      }
+    }
+
+
+
+    function openQuerying() {
+      closeAROAll();
+      document.getElementById("queryingForm").style.display = "block";
+      document.getElementById("querying_record_id").reset();
+      document.getElementById("querying_student_id").reset();
+      document.getElementById("querying_course_id").reset();
+      document.getElementById("querying_formMessage").textContent = "";
+      document.getElementById("querying_formMessage").className = "message";
+    }
+
+    // query grade
+    async function queryingRecord() {
+      const recordId = document.getElementById("querying_record_id").value;
+      const studentId = document.getElementById("querying_student_id").value;
+      const courseId = document.getElementById("querying_course_id").value;
+      const messageDiv = document.getElementById("query_formMessage");
+
+
+      messageDiv.innerHTML = '';
+      messageDiv.className = 'message';
+
+      //check at least one element
+      if (!recordId && !studentId && !courseId) {
+        showMessage("query_formMessage", "Please enter at least one element to query", "error");
+        return;
+      }
+
+      try {
+        let response;
+        let data;
+
+        // query by record id (first)
+        if (recordId) {
+          response = await fetch(`/api/grades/${recordId}`);
+          data = await response.json();
+
+          if (data.success) {
+            displayQueryResult([data.data], "1 grade record found", "query_formMessage");
+          } else {
+            showMessage("query_formMessage", data.message || "Record not found", "error");
+          }
+        }
+        //query by student id and course id (second)
+        else if (studentId && courseId) {
+          response = await fetch('/api/grades/by-student-course', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              student_id: studentId,
+              course_id: courseId
+            })
+          });
+          data = await response.json();
+
+          if (data.success) {
+            displayQueryResult([data.data], '${filteredResults.length} grade record found', "query_formMessage");
+          } else {
+            showMessage("query_formMessage", data.message || "No grade record found for this student and course", "error");
+          }
+        }
+        // query by student id or course id
+        else if (studentId || courseId) {
+          // get all grades
+          response = await fetch('/api/grades/');
+          data = await response.json();
+
+          if (data.success) {
+            let filteredResults = data.data;
+
+            // if use student id
+            if (studentId) {
+              filteredResults = filteredResults.filter(grade =>
+                grade.student_id.toString() === studentId
+              );
+            }
+
+            // if use course id
+            if (courseId) {
+              filteredResults = filteredResults.filter(grade =>
+                grade.course_id.toString() === courseId
+              );
+            }
+
+            if (filteredResults.length > 0) {
+              displayQueryResult(filteredResults, `Found ${filteredResults.length} grade records`, "query_formMessage");
+            } else {
+              showMessage("query_formMessage", "No grade records found matching your criteria", "warning");
+            }
+          } else {
+            showMessage("query_formMessage", data.message || "Failed to fetch grade records", "error");
+          }
+        }
+
+      } catch (error) {
+        console.error('Error querying grade:', error);
+        showMessage("query_formMessage", "Error querying grade records", "error");
+      }
+    }
+
+
+
+    function openModifying() {
+      closeAROAll();
+      document.getElementById("modifyingForm").style.display = "block";
+      document.getElementById("modify_gradeForm").reset();
+      document.getElementById("modify_formMessage").textContent = "";
+      document.getElementById("modify_formMessage").className = "message";
+    }
+
+    //update grade
+    async function modifyingRecord() {
+      const formData = {
+        id: document.getElementById("modify_record_id").value,
+        student_id: document.getElementById("modify_student_id").value,
+        course_id: document.getElementById("modify_course_id").value,
+        term: document.getElementById("modify_term").value,
+        grade: document.getElementById("modify_grade").value,
+        comments: document.getElementById("modify_comments").value,
+      };
+
+      const messageDiv = document.getElementById("modify_formMessage");
+      if (
+        !formData.id ||
+        !formData.student_id ||
+        !formData.course_id ||
+        !formData.term ||
+        !formData.grade
+      ) {
+        messageDiv.textContent = "Please fill in all required fields";
+        messageDiv.className = "message error";
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/grades/EditGrading', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("modify_formMessage", "Grade updated successfully!", "success");
+        } else {
+          showMessage("modify_formMessage", data.message || "Failed to update grade", "error");
+        }
+      } catch (error) {
+        console.error('Error updating grade:', error);
+        showMessage("modify_formMessage", "Error updating grade", "error");
+      }
+    }
+
+    // dro Functions
+    function closeDROAll() {
+      document.getElementById("droAddingForm").style.display = "none";
+      document.getElementById("droDeleteForm").style.display = "none";
+      document.getElementById("droQueryingForm").style.display = "none";
+      document.getElementById("droModifyingForm").style.display = "none";
+    }
+
+    function openDROAdding() {
+      closeDROAll();
+      document.getElementById("droAddingForm").style.display = "block";
+      document.getElementById("disciplinaryForm").reset();
+      document.getElementById("dro_add_formMessage").textContent = "";
+      document.getElementById("dro_add_formMessage").className = "message";
+    }
+
+    //create discip
+    async function submitDisciplinaryRecord() {
+      const formData = {
+        student_id: document.getElementById("add_disciplinary_student_id").value,
+        date: document.getElementById("add_disciplinary_date").value,
+        staff_id: document.getElementById("add_disciplinary_staff_id").value,
+        descriptions: document.getElementById("add_disciplinary_descriptions").value,
+      };
+
+      const messageDiv = document.getElementById("dro_add_formMessage");
+
+      if (!formData.student_id || !formData.date || !formData.staff_id || !formData.descriptions) {
+        showMessage("dro_add_formMessage", "Please fill in all required fields", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/disciplinary/AddDisciplinary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("dro_add_formMessage", "Disciplinary record added successfully!", "success");
+          document.getElementById("disciplinaryForm").reset();
+        } else {
+          showMessage("dro_add_formMessage", data.message || "Failed to add disciplinary record", "error");
+        }
+      } catch (error) {
+        console.error('Error adding disciplinary record:', error);
+        showMessage("dro_add_formMessage", "Error adding disciplinary record", "error");
+      }
+    }
+
+    function openDRODeleting() {
+      closeDROAll();
+      document.getElementById("droDeleteForm").style.display = "block";
+      document.getElementById("delete_disciplinary_id").value = "";
+      document.getElementById("dro_delete_formMessage").textContent = "";
+      document.getElementById("dro_delete_formMessage").className = "message";
+    }
+
+    //delete discip
+    async function deleteDisciplinaryRecord() {
+      const recordId = document.getElementById("delete_disciplinary_id").value;
+      const messageDiv = document.getElementById("dro_delete_formMessage");
+
+      if (!recordId) {
+        showMessage("dro_delete_formMessage", "Please enter a record ID", "error");
+        return;
+      }
+
+      const confirmed = confirm(
+        `Are you sure you want to delete disciplinary record: ${recordId}?\n\nThis action cannot be undone.`
+      );
+
+      if (!confirmed) {
+        showMessage("dro_delete_formMessage", "Deletion cancelled", "warning");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/disciplinary/DeleteDisciplinary/${recordId}`, {
+          method: 'DELETE',
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("dro_delete_formMessage", "Disciplinary record deleted successfully!", "success");
+          document.getElementById("delete_disciplinary_id").value = "";
+        } else {
+          showMessage("dro_delete_formMessage", data.message || "Failed to delete disciplinary record", "error");
+        }
+      } catch (error) {
+        console.error('Error deleting disciplinary record:', error);
+        showMessage("dro_delete_formMessage", "Error deleting disciplinary record", "error");
+      }
+    }
+
+    function openDROQuerying() {
+      closeDROAll();
+      document.getElementById("droQueryingForm").style.display = "block";
+      document.getElementById("querying_disciplinary_id").value = "";
+      document.getElementById("querying_disciplinary_student_id").value = "";
+      document.getElementById("querying_disciplinary_staff_id").value = "";
+      document.getElementById("dro_query_formMessage").textContent = "";
+      document.getElementById("dro_query_formMessage").className = "message";
+    }
+    // query discip base on record/student/staff id
+    async function queryDisciplinaryRecords() {
+      const recordId = document.getElementById("querying_disciplinary_id").value;
+      const studentId = document.getElementById("querying_disciplinary_student_id").value;
+      const staffId = document.getElementById("querying_disciplinary_staff_id").value;
+      const messageDiv = document.getElementById("dro_query_formMessage");
+
+      messageDiv.innerHTML = '';
+      messageDiv.className = 'message';
+
+      if (!recordId && !studentId && !staffId) {
+        showMessage("dro_query_formMessage", "Please enter at least one search criteria", "error");
+        return;
+      }
+
+      try {
+        let response;
+        let data;
+
+        // query by record id
+        if (recordId) {
+          response = await fetch(`/api/disciplinary/${recordId}`);
+          data = await response.json();
+
+          if (data.success) {
+            displayQueryResult([data.data], "Disciplinary record found", "dro_query_formMessage");
+          } else {
+            showMessage("dro_query_formMessage", data.message || "Record not found", "error");
+          }
+        }
+        // query by student id
+        else if (studentId) {
+          response = await fetch(`/api/students/disciplinary/${studentId}`);
+          data = await response.json();
+
+          if (data.success) {
+            displayQueryResult(data.data, `Found ${data.data.length} disciplinary records for student`, "dro_query_formMessage");
+          } else {
+            showMessage("dro_query_formMessage", data.message || "No disciplinary records found for this student", "error");
+          }
+        }
+        // query by staff id
+        else {
+          response = await fetch('/api/disciplinary');
+          data = await response.json();
+
+          if (data.success) {
+            let filteredData = data.data;
+            if (staffId) {
+              filteredData = filteredData.filter(record => record.staff_id == staffId);
+            }
+
+            if (filteredData.length > 0) {
+              displayQueryResult(filteredData, `Found ${filteredData.length} disciplinary records`, "dro_query_formMessage");
+            } else {
+              showMessage("dro_query_formMessage", "No disciplinary records found", "warning");
+            }
+          } else {
+            showMessage("dro_query_formMessage", data.message || "Failed to fetch disciplinary records", "error");
+          }
+        }
+
+      } catch (error) {
+        console.error('Error querying disciplinary records:', error);
+        showMessage("dro_query_formMessage", "Error querying disciplinary records", "error");
+      }
+    }
+
+    function openDROModifying() {
+      closeDROAll();
+      document.getElementById("droModifyingForm").style.display = "block";
+      document.getElementById("disciplinaryModifyForm").reset();
+      document.getElementById("dro_modify_formMessage").textContent = "";
+      document.getElementById("dro_modify_formMessage").className = "message";
+    }
+
+    // update discip
+    async function modifyDisciplinaryRecord() {
+      const formData = {
+        id: document.getElementById("modify_disciplinary_id").value,
+        student_id: document.getElementById("modify_disciplinary_student_id").value,
+        date: document.getElementById("modify_disciplinary_date").value,
+        staff_id: document.getElementById("modify_disciplinary_staff_id").value,
+        descriptions: document.getElementById("modify_disciplinary_descriptions").value,
+      };
+
+      const messageDiv = document.getElementById("dro_modify_formMessage");
+
+      if (!formData.id || !formData.student_id || !formData.date || !formData.staff_id || !formData.descriptions) {
+        showMessage("dro_modify_formMessage", "Please fill in all required fields", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/disciplinary/EditDisciplinary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("dro_modify_formMessage", "Disciplinary record updated successfully!", "success");
+        } else {
+          showMessage("dro_modify_formMessage", data.message || "Failed to update disciplinary record", "error");
+        }
+      } catch (error) {
+        console.error('Error updating disciplinary record:', error);
+        showMessage("dro_modify_formMessage", "Error updating disciplinary record", "error");
+      }
+    }
+
+    // display
+    function displayQueryResult(results, message, containerId) {
+      const container = document.getElementById(containerId);
+
+      if (!results || results.length === 0) {
+        container.innerHTML = '<div class="message warning">No records found</div>';
+        container.style.display = "block";
+        return;
+      }
+
+      const columns = Object.keys(results[0]);
+      const columnWidths = {};
+
+      columns.forEach(col => {
+        const headerWidth = col.length;
+        const contentWidth = Math.max(...results.map(row =>
+          String(row[col] || 'NULL').length
+        ));
+        columnWidths[col] = Math.max(headerWidth, contentWidth, 8) + 2;
+      });
+
+      const totalWidth = Object.values(columnWidths).reduce((a, b) => a + b, 0) + (columns.length * 3) + 1;
+
+      let html = `<div class="message success">${message}</div>`;
+
+      const headerRow = columns.map(col => {
+        return `<span class="sql-keyword">${col.padEnd(columnWidths[col])}</span>`;
+      });
+      html += `| ${headerRow.join(' | ')} |<br>`;
+
+      // table rows
+      results.forEach((record) => {
+        const row = columns.map(col => {
+          const value = record[col];
+          let displayValue = value === null || value === undefined ? 'NULL' : String(value);
+          let cssClass = '';
+
+          if (value === null || value === undefined) {
+            cssClass = 'sql-null';
+          } else if (typeof value === 'number') {
+            cssClass = 'sql-number';
+          } else {
+            cssClass = 'sql-string';
+          }
+
+          return `<span class="${cssClass}">${displayValue.padEnd(columnWidths[col])}</span>`;
+        });
+
+        html += `| ${row.join(' | ')} |<br>`;
+      });
+
+      container.innerHTML = html;
+      container.style.display = "block";
+    }
+
+
+  </script>
+</body>
+
+</html>

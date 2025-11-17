@@ -10,13 +10,15 @@ import disciplinaryRoutes from "./routes/dro.js";
 import guardianRoutes from "./routes/guardian.js";
 import staffRoutes from "./routes/staff.js";
 import courseRoutes from "./routes/course.js";
-import db from "./db.js";
+
+
 
 const app = express();
 
 app.use(express.json());
 // 用COOKIE_SECRET嚟簽名cookie，防止被篡改
 app.use(cookieParser(config.COOKIE_SECRET));
+app.use(express.static('static'));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
@@ -26,6 +28,9 @@ app.use("/api/guardians", guardianRoutes);
 app.use("/api/staffs", staffRoutes);
 app.use("/api/courses", courseRoutes);
 
+app.get('/', (req, res) => {
+  res.redirect('./login_page.html');
+});
 
 app.listen(config.PORT, () => {
   console.log(`Server listening on port ${config.PORT}`);
