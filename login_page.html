@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <style>
+    .wapper {
+      width: 100%;
+      height: 100%;
+      background-color: #f0f0f0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .button-container {
+      position: relative;
+      left: 40px; 
+      top: 20px;  
+    }
+
+    .message {
+      margin-top: 30px;
+      color: green;
+      font-weight: bold;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wapper">
+    <h1>Login:</h1>
+    User Type: 
+    <select id="userType">
+    <option value="staff">Staff</option>
+    <option value="student">Student</option>
+    <option value="guardian">Guardian</option>
+   </select> <br>
+
+    Account  : <input type="text" value="" id="account"> <br>
+    Password : <input type="password" value="" id="password"> 
+  </div>
+  <div class="button-container">
+    <button type="button" id="Enter" onclick="login()"> Enter </button>
+  </div>
+  <div id="message" class="message"></div>
+
+  <script>
+    async function login() {
+      const userType = document.getElementById('userType').value;
+      const account = document.getElementById('account').value;
+      const password = document.getElementById('password').value;
+      const messageDiv = document.getElementById('message');
+      const button = document.getElementById('Enter');
+      
+      
+      console.log('Login :', account , password , userType);
+      
+      if (!account || !password) {
+        messageDiv.textContent = 'Please fill in both fields';
+        messageDiv.className = 'message error';
+        return;
+      }
+    const endpoint = userType === 'staff' 
+    ? '/api/auth/staff/login' 
+    : userType === 'student' 
+    ? '/api/auth/student/login'
+    : '/api/auth/guardian/login';
+
+      // loading
+      button.disabled = true;
+      messageDiv.textContent = 'Logging in...';
+      messageDiv.className = 'message loading';
+
+      try {
+
+       const response = await fetch(`http://localhost:3000${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        email: account, 
+        password: password 
+      })
+       });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // Login successful
+          messageDiv.textContent = 'Login successful!';
+          messageDiv.className = 'message';
+          
+          sessionStorage.setItem('userData', JSON.stringify(data.data));
+          window.location.href = 'type.html';
+
+        } else {
+          // Login failed
+          messageDiv.textContent = data.message || 'Login failed';
+          messageDiv.className = 'message error';
+          button.disabled = false;
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        messageDiv.textContent = 'Network error. Please try again.';
+        messageDiv.className = 'message error';
+        button.disabled = false;
+      }
+    }
+
+
+  </script>
+</body>
+
+</html>
