@@ -1,4 +1,4 @@
-index.js
+
 import express from "express";
 
 import cookieParser from "cookie-parser";
@@ -24,6 +24,7 @@ const app = express();
 
 app.use(express.json());
 // 用COOKIE_SECRET嚟簽名cookie，防止被篡改
+app.use(detectSQLInjection);
 app.use(cookieParser(config.COOKIE_SECRET));
 app.use(express.static('static'));
 
@@ -42,5 +43,5 @@ app.get('/', (req, res) => {
 
 app.listen(config.PORT, () => {
   console.log(`Server listening on port ${config.PORT}`);
-  console.log(`Login page: http://localhost:${config.PORT}/login.html`);
+
 });
