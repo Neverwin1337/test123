@@ -698,7 +698,7 @@
 
         <div class="form-group">
           <label for="add_disciplinary_date">Date:</label>
-          <input type="text" id="add_disciplinary_date" name="date" placeholder="DD/MM/YYYY" required />
+          <input type="date" id="add_disciplinary_date" name="date" required />
         </div>
 
         <div class="form-group">
@@ -781,7 +781,7 @@
 
         <div class="form-group">
           <label for="modify_disciplinary_date">Date:</label>
-          <input type="text" id="modify_disciplinary_date" name="date" placeholder="DD/MM/YYYY" required />
+          <input type="date" id="modify_disciplinary_date" name="date" required />
         </div>
 
         <div class="form-group">
@@ -1721,7 +1721,7 @@
     async function submitDisciplinaryRecord() {
       const formData = {
         student_id: document.getElementById("add_disciplinary_student_id").value,
-        date: document.getElementById("add_disciplinary_date").value,
+        date: getStandardizedDateValue("add_disciplinary_date"),
         staff_id: document.getElementById("add_disciplinary_staff_id").value,
         descriptions: document.getElementById("add_disciplinary_descriptions").value,
       };
@@ -1892,7 +1892,7 @@
       const formData = {
         id: document.getElementById("modify_disciplinary_id").value,
         student_id: document.getElementById("modify_disciplinary_student_id").value,
-        date: document.getElementById("modify_disciplinary_date").value,
+        date: getStandardizedDateValue("modify_disciplinary_date"),
         staff_id: document.getElementById("modify_disciplinary_staff_id").value,
         descriptions: document.getElementById("modify_disciplinary_descriptions").value,
       };

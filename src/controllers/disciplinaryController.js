@@ -2,6 +2,15 @@ import db from "../db.js";
 import config from "../config.js";
 import { logDataModification } from "../utils/logger.js";
 
+const normalizeDate = (input) => {
+  if (!input) return null;
+  const parsed = new Date(input);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed.toISOString().split("T")[0];
+};
+
 export const getAllDisciplinaryRecords = async (req, res) => {
   try {
     const result = await db.raw(
@@ -38,22 +47,26 @@ export const getDisciplinaryRecordById = async (req, res) => {
 export const addDisciplinaryRecord = async (req, res) => {
   try {
     const { student_id, date, staff_id, descriptions } = req.body;
+    const normalizedDate = normalizeDate(date);
     if (!student_id || !date || !staff_id) {
       return res.status(400).json({ success: false, message: "缺少必填字段" });
+    }
+    if (!normalizedDate) {
+      return res.status(400).json({ success: false, message: "日期格式不正确" });
     }
     const result = await db.raw(
       `INSERT INTO disciplinary_records (student_id, date, staff_id, descriptions)
        VALUES (?, ?, ?, ${descriptions ? 'AES_ENCRYPT(?, ?)' : 'NULL'})`,
       descriptions
-        ? [student_id, date, staff_id, descriptions, config.AES_KEY]
-        : [student_id, date, staff_id]
+        ? [student_id, normalizedDate, staff_id, descriptions, config.AES_KEY]
+        : [student_id, normalizedDate, staff_id]
     );
     const newId = result[0].insertId;
     logDataModification("CREATE", "disciplinary_record", req, {
       id: newId,
       student_id,
       staff_id,
-      date,
+      date: normalizedDate,
     });
     res.status(201).json({ success: true, data: { id: newId } });
   } catch (error) {
@@ -64,6 +77,7 @@ export const addDisciplinaryRecord = async (req, res) => {
 export const editDisciplinaryRecord = async (req, res) => {
   try {
     const { id, student_id, date, staff_id, descriptions } = req.body;
+    const normalizedDate = date !== undefined ? normalizeDate(date) : undefined;
     if (!id) {
       return res.status(400).json({ success: false, message: "缺少ID字段" });
     }
@@ -77,8 +91,11 @@ export const editDisciplinaryRecord = async (req, res) => {
       changedFields.push("student_id");
     }
     if (date !== undefined) {
+      if (!normalizedDate) {
+        return res.status(400).json({ success: false, message: "日期格式不正确" });
+      }
       updates.push("date = ?");
-      values.push(date);
+      values.push(normalizedDate);
       changedFields.push("date");
     }
     if (staff_id !== undefined) {
