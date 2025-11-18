@@ -10,6 +10,7 @@ import disciplinaryRoutes from "./routes/dro.js";
 import guardianRoutes from "./routes/guardian.js";
 import staffRoutes from "./routes/staff.js";
 import courseRoutes from "./routes/course.js";
+import { detectSQLInjection } from "./middleware/security.js";
 
 
 
@@ -18,6 +19,7 @@ const app = express();
 app.use(express.json());
 // 用COOKIE_SECRET嚟簽名cookie，防止被篡改
 app.use(cookieParser(config.COOKIE_SECRET));
+app.use(detectSQLInjection);
 app.use(express.static('static'));
 
 app.use("/api/auth", authRoutes);

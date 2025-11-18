@@ -1,5 +1,6 @@
 import db from "../db.js";
 import config from "../config.js";
+import { logDataModification } from "../utils/logger.js";
 
 export const getAllStaffs = async (req, res) => {
   try {
@@ -75,7 +76,15 @@ export const addStaff = async (req, res) => {
         department, role
       ]
     );
-    res.status(201).json({ success: true, data: { id: result[0].insertId } });
+    const newId = result[0].insertId;
+    logDataModification("CREATE", "staff", req, {
+      id: newId,
+      last_name,
+      first_name,
+      department,
+      role,
+    });
+    res.status(201).json({ success: true, data: { id: newId } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -99,46 +108,57 @@ export const editStaff = async (req, res) => {
 
     const updates = [];
     const values = [];
+    const changedFields = [];
     
     if (password !== undefined) {
       updates.push("password = AES_ENCRYPT(?, ?)");
       values.push(password, config.AES_KEY);
+      changedFields.push("password");
     }
     if (last_name !== undefined) {
       updates.push("last_name = ?");
       values.push(last_name);
+      changedFields.push("last_name");
     }
     if (first_name !== undefined) {
       updates.push("first_name = ?");
       values.push(first_name);
+      changedFields.push("first_name");
     }
     if (gender !== undefined) {
       updates.push("gender = ?");
       values.push(gender);
+      changedFields.push("gender");
     }
     if (identification_number !== undefined) {
       updates.push("identification_number = AES_ENCRYPT(?, ?)");
       values.push(identification_number, config.AES_KEY);
+      changedFields.push("identification_number");
     }
     if (address !== undefined) {
       updates.push("address = AES_ENCRYPT(?, ?)");
       values.push(address, config.AES_KEY);
+      changedFields.push("address");
     }
     if (email !== undefined) {
       updates.push("email = AES_ENCRYPT(?, ?)");
       values.push(email, config.AES_KEY);
+      changedFields.push("email");
     }
     if (phone !== undefined) {
       updates.push("phone = AES_ENCRYPT(?, ?)");
       values.push(phone, config.AES_KEY);
+      changedFields.push("phone");
     }
     if (department !== undefined) {
       updates.push("department = ?");
       values.push(department);
+      changedFields.push("department");
     }
     if (role !== undefined) {
       updates.push("role = ?");
       values.push(role);
+      changedFields.push("role");
     }
 
     if (updates.length === 0) {
@@ -154,6 +174,7 @@ export const editStaff = async (req, res) => {
     if (result[0].affectedRows === 0) {
       return res.status(404).json({ success: false, message: "员工不存在" });
     }
+    logDataModification("UPDATE", "staff", req, { id, changedFields });
     res.status(200).json({ success: true, message: "更新成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -167,6 +188,7 @@ export const deleteStaff = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ success: false, message: "员工不存在" });
     }
+    logDataModification("DELETE", "staff", req, { id });
     res.status(200).json({ success: true, message: "删除成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

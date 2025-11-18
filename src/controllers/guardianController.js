@@ -1,5 +1,6 @@
 import db from "../db.js";
 import config from "../config.js";
+import { logDataModification } from "../utils/logger.js";
 
 export const getAllGuardians = async (req, res) => {
   try {
@@ -52,7 +53,13 @@ export const addGuardian = async (req, res) => {
         ...(phone ? [phone, config.AES_KEY] : [])
       ]
     );
-    res.status(201).json({ success: true, data: { id: result[0].insertId } });
+    const newId = result[0].insertId;
+    logDataModification("CREATE", "guardian", req, {
+      id: newId,
+      last_name,
+      first_name,
+    });
+    res.status(201).json({ success: true, data: { id: newId } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -65,26 +72,32 @@ export const editGuardian = async (req, res) => {
 
     const updates = [];
     const values = [];
+    const changedFields = [];
     
     if (password !== undefined) {
       updates.push("password = AES_ENCRYPT(?, ?)");
       values.push(password, config.AES_KEY);
+      changedFields.push("password");
     }
     if (last_name !== undefined) {
       updates.push("last_name = ?");
       values.push(last_name);
+      changedFields.push("last_name");
     }
     if (first_name !== undefined) {
       updates.push("first_name = ?");
       values.push(first_name);
+      changedFields.push("first_name");
     }
     if (email !== undefined) {
       updates.push("email = AES_ENCRYPT(?, ?)");
       values.push(email, config.AES_KEY);
+      changedFields.push("email");
     }
     if (phone !== undefined) {
       updates.push("phone = AES_ENCRYPT(?, ?)");
       values.push(phone, config.AES_KEY);
+      changedFields.push("phone");
     }
 
     if (updates.length === 0) {
@@ -100,6 +113,7 @@ export const editGuardian = async (req, res) => {
     if (result[0].affectedRows === 0) {
       return res.status(404).json({ success: false, message: "监护人不存在" });
     }
+    logDataModification("UPDATE", "guardian", req, { id, changedFields });
     res.status(200).json({ success: true, message: "更新成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -113,6 +127,7 @@ export const deleteGuardian = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ success: false, message: "监护人不存在" });
     }
+    logDataModification("DELETE", "guardian", req, { id });
     res.status(200).json({ success: true, message: "删除成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

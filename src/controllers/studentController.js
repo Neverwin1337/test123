@@ -1,6 +1,7 @@
 import db from "../db.js";
 import config from "../config.js";
 import { encryptSQL } from "../utils/crypto.js";
+import { logDataModification } from "../utils/logger.js";
 
 export const getAllStudents = async (req, res) => {
   try {
@@ -79,7 +80,15 @@ export const addStudent = async (req, res) => {
       ]
     );
     
-    res.status(201).json({ success: true, data: { id: result[0].insertId } });
+    const newId = result[0].insertId;
+    logDataModification("CREATE", "student", req, {
+      id: newId,
+      last_name,
+      first_name,
+      guardian_id,
+      enrollment_year,
+    });
+    res.status(201).json({ success: true, data: { id: newId } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -108,50 +117,62 @@ export const editStudent = async (req, res) => {
 
     const updates = [];
     const values = [];
+    const changedFields = [];
 
     if (password !== undefined) {
       updates.push("password = AES_ENCRYPT(?, ?)");
       values.push(password, config.AES_KEY);
+      changedFields.push("password");
     }
     if (last_name !== undefined) {
       updates.push("last_name = ?");
       values.push(last_name);
+      changedFields.push("last_name");
     }
     if (first_name !== undefined) {
       updates.push("first_name = ?");
       values.push(first_name);
+      changedFields.push("first_name");
     }
     if (gender !== undefined) {
       updates.push("gender = ?");
       values.push(gender);
+      changedFields.push("gender");
     }
     if (identification_number !== undefined) {
       updates.push("identification_number = AES_ENCRYPT(?, ?)");
       values.push(identification_number, config.AES_KEY);
+      changedFields.push("identification_number");
     }
     if (address !== undefined) {
       updates.push("address = AES_ENCRYPT(?, ?)");
       values.push(address, config.AES_KEY);
+      changedFields.push("address");
     }
     if (email !== undefined) {
       updates.push("email = AES_ENCRYPT(?, ?)");
       values.push(email, config.AES_KEY);
+      changedFields.push("email");
     }
     if (phone !== undefined) {
       updates.push("phone = AES_ENCRYPT(?, ?)");
       values.push(phone, config.AES_KEY);
+      changedFields.push("phone");
     }
     if (enrollment_year !== undefined) {
       updates.push("enrollment_year = ?");
       values.push(enrollment_year);
+      changedFields.push("enrollment_year");
     }
     if (guardian_id !== undefined) {
       updates.push("guardian_id = ?");
       values.push(guardian_id);
+      changedFields.push("guardian_id");
     }
     if (guardian_relation !== undefined) {
       updates.push("guardian_relation = ?");
       values.push(guardian_relation);
+      changedFields.push("guardian_relation");
     }
 
     if (updates.length === 0) {
@@ -167,6 +188,7 @@ export const editStudent = async (req, res) => {
     if (result[0].affectedRows === 0) {
       return res.status(404).json({ success: false, message: "学生不存在" });
     }
+    logDataModification("UPDATE", "student", req, { id, changedFields });
     res.status(200).json({ success: true, message: "更新成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

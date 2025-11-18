@@ -1,5 +1,6 @@
 import db from "../db.js";
 import config from "../config.js";
+import { logSecurityEvent } from "../utils/logger.js";
 
 // 驗證用戶登咗入未
 export const authenticate = async (req, res, next) => {
@@ -16,6 +17,9 @@ export const authenticate = async (req, res, next) => {
     const userType = req.signedCookies.userType;
 
     if (!userId || !userType) {
+      logSecurityEvent("UNAUTHENTICATED_ACCESS", req, {
+        reason: "missing_signed_cookie",
+      });
       return res.status(401).json({ success: false, message: "未登入或cookie已被篡改" });
     }
 
@@ -30,6 +34,11 @@ export const authenticate = async (req, res, next) => {
     }
 
     if (!user) {
+      logSecurityEvent("UNAUTHORIZED_ACCESS", req, {
+        reason: "user_not_found",
+        userId,
+        userType,
+      });
       return res.status(401).json({ success: false, message: "用戶唔存在" });
     }
 
@@ -48,6 +57,10 @@ export const requireStaff = (req, res, next) => {
   }
   
   if (req.user.type !== "staff") {
+    logSecurityEvent("POLICY_VIOLATION", req, {
+      policy: "requireStaff",
+      userType: req.user.type,
+    });
     return res.status(403).json({ success: false, message: "權限唔夠" });
   }
   next();
@@ -70,6 +83,11 @@ export const requireSelfOrStaff = (req, res, next) => {
     return next();
   }
   
+  logSecurityEvent("POLICY_VIOLATION", req, {
+    policy: "requireSelfOrStaff",
+    userType: req.user.type,
+    resourceId,
+  });
   return res.status(403).json({ success: false, message: "淨係可以睇自己嘅資料" });
 };
 
@@ -83,12 +101,22 @@ export const requireRole = (requiredRole) => {
       }
       
       if (req.user.type !== "staff") {
+        logSecurityEvent("POLICY_VIOLATION", req, {
+          policy: "requireRole",
+          requiredRole,
+          userType: req.user.type,
+        });
         return res.status(403).json({ success: false, message: "權限唔夠" });
       }
 
       const staff = await db("staffs").where({ id: req.user.id }).first();
       
       if (!staff || staff.role !== requiredRole) {
+        logSecurityEvent("POLICY_VIOLATION", req, {
+          policy: "requireRole",
+          requiredRole,
+          userRole: staff?.role,
+        });
         return res.status(403).json({ 
           success: false, 
           message: `淨係${requiredRole}先可以做呢個操作` 

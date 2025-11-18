@@ -1,4 +1,5 @@
 import db from "../db.js";
+import { logDataModification } from "../utils/logger.js";
 
 export const getAllCourses = async (req, res) => {
   try {
@@ -29,6 +30,7 @@ export const addCourse = async (req, res) => {
       return res.status(400).json({ success: false, message: "缺少课程名称" });
     }
     const [id] = await db("courses").insert({ course_name });
+    logDataModification("CREATE", "course", req, { id, course_name });
     res.status(201).json({ success: true, data: { id } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -46,6 +48,7 @@ export const editCourse = async (req, res) => {
     if (!updated) {
       return res.status(404).json({ success: false, message: "课程不存在" });
     }
+    logDataModification("UPDATE", "course", req, { id, changedFields: ["course_name"] });
     res.status(200).json({ success: true, message: "更新成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -59,6 +62,7 @@ export const deleteCourse = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ success: false, message: "课程不存在" });
     }
+    logDataModification("DELETE", "course", req, { id });
     res.status(200).json({ success: true, message: "删除成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -1,5 +1,6 @@
 import db from "../db.js";
 import config from "../config.js";
+import { logDataModification } from "../utils/logger.js";
 
 export const getAllDisciplinaryRecords = async (req, res) => {
   try {
@@ -47,7 +48,14 @@ export const addDisciplinaryRecord = async (req, res) => {
         ? [student_id, date, staff_id, descriptions, config.AES_KEY]
         : [student_id, date, staff_id]
     );
-    res.status(201).json({ success: true, data: { id: result[0].insertId } });
+    const newId = result[0].insertId;
+    logDataModification("CREATE", "disciplinary_record", req, {
+      id: newId,
+      student_id,
+      staff_id,
+      date,
+    });
+    res.status(201).json({ success: true, data: { id: newId } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -61,22 +69,27 @@ export const editDisciplinaryRecord = async (req, res) => {
     }
     const updates = [];
     const values = [];
+    const changedFields = [];
     
     if (student_id !== undefined) {
       updates.push("student_id = ?");
       values.push(student_id);
+      changedFields.push("student_id");
     }
     if (date !== undefined) {
       updates.push("date = ?");
       values.push(date);
+      changedFields.push("date");
     }
     if (staff_id !== undefined) {
       updates.push("staff_id = ?");
       values.push(staff_id);
+      changedFields.push("staff_id");
     }
     if (descriptions !== undefined) {
       updates.push("descriptions = AES_ENCRYPT(?, ?)");
       values.push(descriptions, config.AES_KEY);
+      changedFields.push("descriptions");
     }
 
     if (updates.length === 0) {
@@ -92,6 +105,7 @@ export const editDisciplinaryRecord = async (req, res) => {
     if (result[0].affectedRows === 0) {
       return res.status(404).json({ success: false, message: "记录不存在" });
     }
+    logDataModification("UPDATE", "disciplinary_record", req, { id, changedFields });
     res.status(200).json({ success: true, message: "更新成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -105,6 +119,7 @@ export const deleteDisciplinaryRecord = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ success: false, message: "记录不存在" });
     }
+    logDataModification("DELETE", "disciplinary_record", req, { id });
     res.status(200).json({ success: true, message: "删除成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

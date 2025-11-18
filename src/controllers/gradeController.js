@@ -1,5 +1,6 @@
 import db from "../db.js";
 import config from "../config.js";
+import { logDataModification } from "../utils/logger.js";
 
 export const getAllGrades = async (req, res) => {
   try {
@@ -50,7 +51,14 @@ export const addGrade = async (req, res) => {
         ? [student_id, course_id, term, grade, config.AES_KEY, comments, config.AES_KEY]
         : [student_id, course_id, term, grade, config.AES_KEY]
     );
-    res.status(201).json({ success: true, data: { id: result[0].insertId } });
+    const newId = result[0].insertId;
+    logDataModification("CREATE", "grade", req, {
+      id: newId,
+      student_id,
+      course_id,
+      term,
+    });
+    res.status(201).json({ success: true, data: { id: newId } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -64,26 +72,32 @@ export const editGrade = async (req, res) => {
     }
     const updates = [];
     const values = [];
+    const changedFields = [];
     
     if (student_id !== undefined) {
       updates.push("student_id = ?");
       values.push(student_id);
+      changedFields.push("student_id");
     }
     if (course_id !== undefined) {
       updates.push("course_id = ?");
       values.push(course_id);
+      changedFields.push("course_id");
     }
     if (term !== undefined) {
       updates.push("term = ?");
       values.push(term);
+      changedFields.push("term");
     }
     if (grade !== undefined) {
       updates.push("grade = AES_ENCRYPT(?, ?)");
       values.push(grade, config.AES_KEY);
+      changedFields.push("grade");
     }
     if (comments !== undefined) {
       updates.push("comments = AES_ENCRYPT(?, ?)");
       values.push(comments, config.AES_KEY);
+      changedFields.push("comments");
     }
 
     if (updates.length === 0) {
@@ -99,6 +113,7 @@ export const editGrade = async (req, res) => {
     if (result[0].affectedRows === 0) {
       return res.status(404).json({ success: false, message: "成绩不存在" });
     }
+    logDataModification("UPDATE", "grade", req, { id, changedFields });
     res.status(200).json({ success: true, message: "更新成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -140,6 +155,7 @@ export const deleteGrade = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ success: false, message: "成绩不存在" });
     }
+    logDataModification("DELETE", "grade", req, { id });
     res.status(200).json({ success: true, message: "删除成功" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
