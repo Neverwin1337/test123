@@ -10,6 +10,9 @@ const suspiciousPatterns = [
   /\/\*/,
   /sleep\s*\(\s*\d+/i,
   /exec\b/i,
+  /<script>\b/i,
+  /javascript\s*:/i,
+
 ];
 
 const isSuspiciousValue = (value) => {
