@@ -1016,10 +1016,35 @@ async function loadStaffInfo() {
   }
 }
 
+// load staff info for update form
+async function loadStaffInfoForUpdate() {
+  try {
+    const response = await fetch(`/api/staffs/${currentUser.id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const staff = data.data;
+      // Fill update form with current values
+      document.getElementById("staff_id").value = staff.id || "";
+      document.getElementById("staff_first_name").value = staff.first_name || "";
+      document.getElementById("staff_last_name").value = staff.last_name || "";
+      document.getElementById("staff_gender").value = staff.gender || "";
+      document.getElementById("staff_identification_number").value = staff.identification_number || "";
+      document.getElementById("staff_address").value = staff.address || "";
+      document.getElementById("staff_email").value = staff.email || "";
+      document.getElementById("staff_phone").value = staff.phone || "";
+    } else {
+      showMessage("staffInfoMessage", "Failed to load staff information", "error");
+    }
+  } catch (error) {
+    console.error("Error loading staff info:", error);
+    showMessage("staffInfoMessage", "Error loading information", "error");
+  }
+}
+
     // update staff info
     async function updateStaffInfo() {
       const password = document.getElementById("staff_password").value;
-      const queryStaffId = document.getElementById("query_staff_id").value;
       let password_confirm;
       if (password) {
         password_confirm = prompt(
@@ -1034,8 +1059,8 @@ async function loadStaffInfo() {
           return;
         }
       }
+      
       const formData = {
-        id: document.getElementById("staff_id").value,
         first_name: document.getElementById("staff_first_name").value,
         last_name: document.getElementById("staff_last_name").value,
         gender: document.getElementById("staff_gender").value,
@@ -1050,26 +1075,9 @@ async function loadStaffInfo() {
       if (password && password_confirm) {
         formData.password = password_confirm;
       }
-      const messageDiv = document.getElementById("staffInfoMessage");
-      if (
-        !formData.first_name ||
-        !formData.last_name ||
-        !formData.email ||
-        !formData.phone ||
-        !formData.identification_number ||
-        !formData.address ||
-        !formData.gender
-      ) {
-        showMessage(
-          "staffInfoMessage",
-          "Please fill at least one element",
-          "error"
-        );
-        return;
-      }
 
       try {
-        const response = await fetch(`/api/staffs/${queryStaffId}`, {
+        const response = await fetch(`/api/staffs/${currentUser.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -1085,6 +1093,7 @@ async function loadStaffInfo() {
             "Information updated successfully",
             "success"
           );
+          document.getElementById("staff_password").value = "";
         } else {
           showMessage(
             "staffInfoMessage",
@@ -1547,12 +1556,6 @@ async function loadStaffInfo() {
 
       if (password && password_confirm) {
         formData.password = password_confirm;
-      }
-
-      // check element
-      if (!formData.last_name || !formData.first_name || !formData.email) {
-        showMessage("guardianUpdateMessage", "Please fill in all required fields (Name and Email)", "error");
-        return;
       }
 
       try {
