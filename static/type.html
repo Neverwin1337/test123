@@ -702,11 +702,6 @@
         </div>
 
         <div class="form-group">
-          <label for="add_disciplinary_staff_id">Responsible Staff ID:</label>
-          <input type="text" id="add_disciplinary_staff_id" name="staff_id" required />
-        </div>
-
-        <div class="form-group">
           <label for="add_disciplinary_descriptions">Case Description:</label>
           <textarea id="add_disciplinary_descriptions" name="descriptions" placeholder="Enter case description"
             required></textarea>
@@ -782,11 +777,6 @@
         <div class="form-group">
           <label for="modify_disciplinary_date">Date:</label>
           <input type="date" id="modify_disciplinary_date" name="date" required />
-        </div>
-
-        <div class="form-group">
-          <label for="modify_disciplinary_staff_id">Responsible Staff ID:</label>
-          <input type="text" id="modify_disciplinary_staff_id" name="staff_id" required />
         </div>
 
         <div class="form-group">
@@ -1721,14 +1711,14 @@
     async function submitDisciplinaryRecord() {
       const formData = {
         student_id: document.getElementById("add_disciplinary_student_id").value,
-        date: getStandardizedDateValue("add_disciplinary_date"),
-        staff_id: document.getElementById("add_disciplinary_staff_id").value,
+        date: document.getElementById("add_disciplinary_date").value,
+        staff_id: currentUser.id,
         descriptions: document.getElementById("add_disciplinary_descriptions").value,
       };
 
       const messageDiv = document.getElementById("dro_add_formMessage");
 
-      if (!formData.student_id || !formData.date || !formData.staff_id || !formData.descriptions) {
+      if (!formData.student_id || !formData.date || !formData.descriptions) {
         showMessage("dro_add_formMessage", "Please fill in all required fields", "error");
         return;
       }
@@ -1745,7 +1735,7 @@
         const data = await response.json();
 
         if (data.success) {
-          showMessage("dro_add_formMessage", "Disciplinary record added successfully!", "success");
+          showMessage("dro_add_formMessage", "Disciplinary record added successfully! Record ID: " + data.data.id + " | Created by: " + currentUser.name, "success");
           document.getElementById("disciplinaryForm").reset();
         } else {
           showMessage("dro_add_formMessage", data.message || "Failed to add disciplinary record", "error");
@@ -1892,14 +1882,14 @@
       const formData = {
         id: document.getElementById("modify_disciplinary_id").value,
         student_id: document.getElementById("modify_disciplinary_student_id").value,
-        date: getStandardizedDateValue("modify_disciplinary_date"),
-        staff_id: document.getElementById("modify_disciplinary_staff_id").value,
+        date: document.getElementById("modify_disciplinary_date").value,
+        staff_id: currentUser.id,
         descriptions: document.getElementById("modify_disciplinary_descriptions").value,
       };
-
+                                  
       const messageDiv = document.getElementById("dro_modify_formMessage");
 
-      if (!formData.id || !formData.student_id || !formData.date || !formData.staff_id || !formData.descriptions) {
+      if (!formData.id || !formData.student_id || !formData.date || !formData.descriptions) {
         showMessage("dro_modify_formMessage", "Please fill in all required fields", "error");
         return;
       }
@@ -1916,7 +1906,7 @@
         const data = await response.json();
 
         if (data.success) {
-          showMessage("dro_modify_formMessage", "Disciplinary record updated successfully!", "success");
+          showMessage("dro_modify_formMessage", "Disciplinary record updated successfully! Record ID: " + formData.id + " | Updated by: " + currentUser.name, "success");
         } else {
           showMessage("dro_modify_formMessage", data.message || "Failed to update disciplinary record", "error");
         }
