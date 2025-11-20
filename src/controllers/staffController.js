@@ -110,52 +110,52 @@ export const editStaff = async (req, res) => {
     const values = [];
     const changedFields = [];
     
-    if (password !== undefined) {
+    if (password !== undefined && password !== '') {
       updates.push("password = AES_ENCRYPT(?, ?)");
       values.push(password, config.AES_KEY);
       changedFields.push("password");
     }
-    if (last_name !== undefined) {
+    if (last_name !== undefined && last_name !== '') {
       updates.push("last_name = ?");
       values.push(last_name);
       changedFields.push("last_name");
     }
-    if (first_name !== undefined) {
+    if (first_name !== undefined && first_name !== '') {
       updates.push("first_name = ?");
       values.push(first_name);
       changedFields.push("first_name");
     }
-    if (gender !== undefined) {
+    if (gender !== undefined && gender !== '') {
       updates.push("gender = ?");
       values.push(gender);
       changedFields.push("gender");
     }
-    if (identification_number !== undefined) {
+    if (identification_number !== undefined && identification_number !== '') {
       updates.push("identification_number = AES_ENCRYPT(?, ?)");
       values.push(identification_number, config.AES_KEY);
       changedFields.push("identification_number");
     }
-    if (address !== undefined) {
+    if (address !== undefined && address !== '') {
       updates.push("address = AES_ENCRYPT(?, ?)");
       values.push(address, config.AES_KEY);
       changedFields.push("address");
     }
-    if (email !== undefined) {
+    if (email !== undefined && email !== '') {
       updates.push("email = AES_ENCRYPT(?, ?)");
       values.push(email, config.AES_KEY);
       changedFields.push("email");
     }
-    if (phone !== undefined) {
+    if (phone !== undefined && phone !== '') {
       updates.push("phone = AES_ENCRYPT(?, ?)");
       values.push(phone, config.AES_KEY);
       changedFields.push("phone");
     }
-    if (department !== undefined) {
+    if (department !== undefined && department !== '') {
       updates.push("department = ?");
       values.push(department);
       changedFields.push("department");
     }
-    if (role !== undefined) {
+    if (role !== undefined && role !== '') {
       updates.push("role = ?");
       values.push(role);
       changedFields.push("role");

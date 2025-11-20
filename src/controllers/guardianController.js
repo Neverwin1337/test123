@@ -74,27 +74,27 @@ export const editGuardian = async (req, res) => {
     const values = [];
     const changedFields = [];
     
-    if (password !== undefined) {
+    if (password !== undefined && password !== '') {
       updates.push("password = AES_ENCRYPT(?, ?)");
       values.push(password, config.AES_KEY);
       changedFields.push("password");
     }
-    if (last_name !== undefined) {
+    if (last_name !== undefined && last_name !== '') {
       updates.push("last_name = ?");
       values.push(last_name);
       changedFields.push("last_name");
     }
-    if (first_name !== undefined) {
+    if (first_name !== undefined && first_name !== '') {
       updates.push("first_name = ?");
       values.push(first_name);
       changedFields.push("first_name");
     }
-    if (email !== undefined) {
+    if (email !== undefined && email !== '') {
       updates.push("email = AES_ENCRYPT(?, ?)");
       values.push(email, config.AES_KEY);
       changedFields.push("email");
     }
-    if (phone !== undefined) {
+    if (phone !== undefined && phone !== '') {
       updates.push("phone = AES_ENCRYPT(?, ?)");
       values.push(phone, config.AES_KEY);
       changedFields.push("phone");

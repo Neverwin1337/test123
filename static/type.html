@@ -133,6 +133,42 @@
       color: #856404;
       border: 1px solid #ffeaa7;
     }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    
+    .results-table th {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: bold;
+    }
+    
+    .results-table td {
+      border: 1px solid #dee2e6;
+      padding: 8px 12px;
+    }
+    
+    .results-table tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    
+    .results-table tr:hover {
+      background-color: #e9ecef;
+    }
+    
+    .no-results {
+      padding: 15px;
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+    }
+
   </style>
 </head>
 
@@ -151,33 +187,81 @@
     <div id="staff-section" class="type-section">
       <h2>Staff</h2>
       <div class="button-container buttons">
-        <button type="button" id="staff_Adding" onclick="openStaffQuery()">Query</button>
-        <button type="button" id="staff_deleting" onclick="openStaffUpdate()">Update</button>
-        <button type="button" onclick="loadMyInfo()">Load My Info</button>
+        <button type="button" onclick="openStaffInfo()">Query</button>
+        <button type="button" onclick="openStaffUpdate()">Update</button>
       </div>
 
-      <!-- query staff info base on staff id-->
-      <div id="staffQueryForm" class="form-container" style="display: none">
-        <h3>Query Staff Information</h3>
-        <div class="form-group">
-          <label for="query_staff_id">Staff ID:</label>
-          <input type="text" id="query_staff_id" name="staff_id" />
-        </div>
-        <div class="form-buttons">
-          <button type="button" class="submit-btn" onclick="queryStaffInfo()">Query</button>
-          <button type="button" class="cancel-btn" onclick="closeStaffQuery()">Cancel</button>
-        </div>
-        <div id="staffQueryMessage" class="message"></div>
+      <!-- show staff info (read-only) -->
+  <div id="staffInfoForm" class="form-container" style="display: none">
+    <h3>My Personal Information</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="staff_info_id">ID:</label>
+        <input type="text" id="staff_info_id" name="id" readonly />
       </div>
+      <div class="form-group">
+        <label for="staff_info_department">Department:</label>
+        <input type="text" id="staff_info_department" name="department" readonly />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="staff_info_first_name">First Name:</label>
+        <input type="text" id="staff_info_first_name" name="first_name" readonly />
+      </div>
+      <div class="form-group">
+        <label for="staff_info_last_name">Last Name:</label>
+        <input type="text" id="staff_info_last_name" name="last_name" readonly />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="staff_info_gender">Gender:</label>
+      <input type="text" id="staff_info_gender" name="gender" readonly />
+    </div>
+
+    <div class="form-group">
+      <label for="staff_info_identification_number">Identification Number:</label>
+      <input type="text" id="staff_info_identification_number" name="identification_number" readonly />
+    </div>
+
+    <div class="form-group">
+      <label for="staff_info_address">Address:</label>
+      <input type="text" id="staff_info_address" name="address" readonly />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="staff_info_email">Email:</label>
+        <input type="email" id="staff_info_email" name="email" readonly />
+      </div>
+      <div class="form-group">
+        <label for="staff_info_phone">Phone:</label>
+        <input type="text" id="staff_info_phone" name="phone" readonly />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="staff_info_role">Role:</label>
+        <input type="text" id="staff_info_role" name="role" readonly />
+      </div>
+    </div>
+
+    <div class="form-buttons">
+      <button type="button" class="cancel-btn" onclick="closeStaffInfo()">Close</button>
+    </div>
+  </div>
 
       <!-- update staff info -->
       <div id="staffUpdateForm" class="form-container" style="display: none">
         <h3>Update Personal Information</h3>
-        <form id="staffInfoForm">
+        <form id="staffUpdateFormElement">
           <div class="form-row">
             <div class="form-group">
               <label for="staff_id">ID:</label>
-              <input type="text" id="staff_id" name="id" />
+              <input type="text" id="staff_id" name="id" readonly/>
             </div>
             <div class="form-group">
               <label for="staff_password">New Password:</label>
@@ -681,10 +765,10 @@
   <div id="dro-section" class="role-section" style="display: none;">
     <h3>DRO </h3>
     <div class="button-container buttons">
-      <button type="button" onclick="openDROAdding()">Add Disciplinary Record</button>
-      <button type="button" onclick="openDRODeleting()">Delete Disciplinary Record</button>
-      <button type="button" onclick="openDROQuerying()">Query Disciplinary Records</button>
-      <button type="button" onclick="openDROModifying()">Modify Disciplinary Record</button>
+      <button type="button" onclick="openDROAdding()">Add </button>
+      <button type="button" onclick="openDRODeleting()">Delete </button>
+      <button type="button" onclick="openDROQuerying()">Query </button>
+      <button type="button" onclick="openDROModifying()">Modify </button>
     </div>
 
     <!-- add discip -->
@@ -698,7 +782,12 @@
 
         <div class="form-group">
           <label for="add_disciplinary_date">Date:</label>
-          <input type="date" id="add_disciplinary_date" name="date" required />
+          <input type="text" id="add_disciplinary_date" name="date" placeholder="DD/MM/YYYY" required />
+        </div>
+
+        <div class="form-group">
+          <label for="add_disciplinary_staff_id">Responsible Staff ID:</label>
+          <input type="text" id="add_disciplinary_staff_id" name="staff_id" required />
         </div>
 
         <div class="form-group">
@@ -776,7 +865,12 @@
 
         <div class="form-group">
           <label for="modify_disciplinary_date">Date:</label>
-          <input type="date" id="modify_disciplinary_date" name="date" required />
+          <input type="text" id="modify_disciplinary_date" name="date" placeholder="DD/MM/YYYY" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modify_disciplinary_staff_id">Responsible Staff ID:</label>
+          <input type="text" id="modify_disciplinary_staff_id" name="staff_id" required />
         </div>
 
         <div class="form-group">
@@ -867,90 +961,68 @@
     }
 
     // staff part
-    function openStaffQuery() {
-      document.getElementById("staffQueryForm").style.display = "block";
-      document.getElementById("staffUpdateForm").style.display = "none";
-      document.getElementById("staffQueryMessage").textContent = "";
+    function closeAllStaffForms() {
+  document.getElementById("staffInfoForm").style.display = "none";
+  document.getElementById("staffUpdateForm").style.display = "none";
+}
+
+function openStaffInfo() {
+  closeAllStaffForms();
+  document.getElementById("staffInfoForm").style.display = "block";
+  loadStaffInfo();
+}
+
+function openStaffUpdate() {
+  closeAllStaffForms();
+  document.getElementById("staffUpdateForm").style.display = "block";
+  loadStaffInfoForUpdate();
+}
+
+function closeStaffInfo() {
+  document.getElementById("staffInfoForm").style.display = "none";
+}
+
+function closeStaffUpdate() {
+  document.getElementById("staffUpdateForm").style.display = "none";
+}
+
+
+
+    // load staff info for display (read-only)
+async function loadStaffInfo() {
+  try {
+    const response = await fetch(`/api/staffs/${currentUser.id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const staff = data.data;
+      // Fill read-only information form
+      document.getElementById("staff_info_id").value = staff.id || "";
+      document.getElementById("staff_info_first_name").value = staff.first_name || "";
+      document.getElementById("staff_info_last_name").value = staff.last_name || "";
+      document.getElementById("staff_info_gender").value = staff.gender || "";
+      document.getElementById("staff_info_identification_number").value = staff.identification_number || "";
+      document.getElementById("staff_info_address").value = staff.address || "";
+      document.getElementById("staff_info_email").value = staff.email || "";
+      document.getElementById("staff_info_phone").value = staff.phone || "";
+      document.getElementById("staff_info_department").value = staff.department || "";
+      document.getElementById("staff_info_role").value = staff.role || "";
+    } else {
+      showMessage("staffInfoMessage", "Failed to load staff information", "error");
     }
-
-    function closeStaffQuery() {
-      document.getElementById("staffQueryForm").style.display = "none";
-    }
-
-
-    // querying staff info
-    async function queryStaffInfo() {
-      // get user input (staff id)
-      const queryStaffId = document.getElementById("query_staff_id").value;
-
-      if (!queryStaffId) {
-        showMessage("staffQueryMessage", "Please enter a Staff ID", "error");
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/staffs/${queryStaffId}`);
-        const data = await response.json();
-
-        // get staff info
-        if (data.success) {
-          const staff = data.data;
-          document.getElementById("staff_id").value = staff.id || "";
-          document.getElementById("staff_first_name").value =
-            staff.first_name || "";
-          document.getElementById("staff_last_name").value =
-            staff.last_name || "";
-          document.getElementById("staff_gender").value = staff.gender || "";
-          document.getElementById("staff_identification_number").value =
-            staff.identification_number || "";
-          document.getElementById("staff_address").value =
-            staff.address || "";
-          document.getElementById("staff_email").value = staff.email || "";
-          document.getElementById("staff_phone").value = staff.phone || "";
-          document.getElementById("staff_department").value =
-            staff.department || "";
-          document.getElementById("staff_role").value = staff.role || "";
-
-          showMessage("staffQueryMessage", "Information loaded successfully", "success");
-
-          openStaffUpdate();
-        } else {
-          showMessage(
-            "staffInfoMessage",
-            "Failed to load staff information",
-            "error"
-          );
-        }
-      } catch (error) {
-        console.error("Error loading staff info:", error);
-        showMessage("staffInfoMessage", "Error loading information", "error");
-      }
-    }
-
-
-
-    function openStaffUpdate() {
-      document.getElementById("staffUpdateForm").style.display = "block";
-      document.getElementById("staffQueryForm").style.display = "none";
-    }
-
-    //get staff(user) info
-    function loadMyInfo() {
-      document.getElementById("query_staff_id").value = currentUser.id;
-      queryStaffInfo();
-    }
-
-    function closeStaffUpdate() {
-      document.getElementById("staffUpdateForm").style.display = "none";
-    }
-
+  } catch (error) {
+    console.error("Error loading staff info:", error);
+    showMessage("staffInfoMessage", "Error loading information", "error");
+  }
+}
 
     // update staff info
     async function updateStaffInfo() {
       const password = document.getElementById("staff_password").value;
       const queryStaffId = document.getElementById("query_staff_id").value;
+      let password_confirm;
       if (password) {
-        const password_confirm = prompt(
+        password_confirm = prompt(
           "Please enter your new password again:"
         );
         if (password !== password_confirm) {
@@ -1150,15 +1222,15 @@
     async function updateStudentInfo() {
       const password = document.getElementById("update_student_password").value;
       const messageDiv = document.getElementById("studentUpdateMessage");
-
+      let password_confirm;
       if (password) {
-        const password_confirm = prompt("Please enter your new password again:");
+        password_confirm = prompt("Please enter your new password again:");
         if (password !== password_confirm) {
           showMessage("studentUpdateMessage", "Password confirmation does not match", "error");
           return;
         }
       }
-
+      //get input
       const formData = {
         last_name: document.getElementById("update_student_last_name").value,
         first_name: document.getElementById("update_student_first_name").value,
@@ -1171,12 +1243,6 @@
 
       if (password && password_confirm) {
         formData.password = password_confirm;
-      }
-
-      // check element
-      if (!formData.last_name || !formData.first_name || !formData.email) {
-        showMessage("studentUpdateMessage", "Please fill in all required fields (Name and Email)", "error");
-        return;
       }
 
       try {
@@ -1246,7 +1312,7 @@
 
         if (data.success) {
           const guardian = data.data;
-          // Fill read-only information form
+          // fill the form (set)
           document.getElementById("guardian_id").value = guardian.id || "";
           document.getElementById("guardian_last_name").value = guardian.last_name || "";
           document.getElementById("guardian_first_name").value = guardian.first_name || "";
@@ -1361,18 +1427,111 @@
 
 
 
-    // load child discip
+    // load child discip (logic same as child grade)
     async function loadChildDisciplinary() {
-      // later do
+      const messageDiv = document.getElementById("childDisciplinaryMessage");
+  const resultsDiv = document.getElementById("childDisciplinaryResults");
+
+  // clear previous results
+  messageDiv.textContent = "Loading children and disciplinary records...";
+  messageDiv.className = "message";
+  resultsDiv.innerHTML = "";
+  resultsDiv.className = "message";
+
+  try {
+    console.log('Current user ID:', currentUser.id);
+    console.log('Fetching children for guardian...');
+
+    // get all the child of guardian
+    const childrenResponse = await fetch('/api/guardians/my/children', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    });
+
+    console.log('Response status:', childrenResponse.status);
+
+    if (!childrenResponse.ok) {
+      const errorText = await childrenResponse.text();
+      console.error('HTTP Error:', childrenResponse.status, errorText);
+      throw new Error(`HTTP ${childrenResponse.status}: ${childrenResponse.statusText}`);
     }
+
+    const childrenData = await childrenResponse.json();
+    console.log('Children data response:', childrenData);
+
+    if (!childrenData.success) {
+      showMessage("childDisciplinaryMessage", `API Error: ${childrenData.message || 'Unknown error'}`, "error");
+      return;
+    }
+
+    if (!childrenData.data || childrenData.data.length === 0) {
+      showMessage("childDisciplinaryMessage", "No children found for this guardian", "warning");
+      return;
+    }
+
+    const children = childrenData.data;
+    showMessage("childDisciplinaryMessage", `Found ${children.length} children`, "success");
+
+    // Get disciplinary records for each child
+    let allDisciplinaryRecords = [];
+
+    for (const child of children) {
+      try {
+        console.log(`Loading disciplinary records for child: ${child.id}`);
+        const disciplinaryResponse = await fetch(`/api/guardians/my/children/${child.id}/disciplinary`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include'
+        });
+
+        if (disciplinaryResponse.ok) {
+          const disciplinaryData = await disciplinaryResponse.json();
+          console.log(`Disciplinary data for child ${child.id}:`, disciplinaryData);
+
+          if (disciplinaryData.success && disciplinaryData.data) {
+            // Add child information to each disciplinary record
+            const recordsWithChildInfo = disciplinaryData.data.map(record => ({
+              ...record,
+              child_name: `${child.first_name} ${child.last_name}`,
+              child_id: child.id
+            }));
+            allDisciplinaryRecords = allDisciplinaryRecords.concat(recordsWithChildInfo);
+          }
+        } else {
+          console.warn(`Failed to load disciplinary records for child ${child.id}:`, disciplinaryResponse.status);
+        }
+      } catch (error) {
+        console.error(`Error loading disciplinary records for child ${child.id}:`, error);
+      }
+    }
+
+    // Display all disciplinary records
+    if (allDisciplinaryRecords.length > 0) {
+      displayQueryResult(allDisciplinaryRecords, `Found ${allDisciplinaryRecords.length} disciplinary records across all children`, "childDisciplinaryResults");
+      showMessage("childDisciplinaryMessage", "Disciplinary records loaded successfully", "success");
+    } else {
+      showMessage("childDisciplinaryMessage", "No disciplinary records found for any child", "warning");
+    }
+
+  } catch (error) {
+    console.error('Error loading children list:', error);
+    showMessage("childDisciplinaryMessage", `Error: ${error.message}`, "error");
+  }
+}
 
     // update guardian info
     async function updateGuardianInfo() {
       const password = document.getElementById("update_guardian_password").value;
       const messageDiv = document.getElementById("guardianUpdateMessage");
-
+      let password_confirm;
+      //double confirm
       if (password) {
-        const password_confirm = prompt("Please enter your new password again:");
+        password_confirm = prompt("Please enter your new password again:");
         if (password !== password_confirm) {
           showMessage("guardianUpdateMessage", "Password confirmation does not match", "error");
           return;
@@ -1513,6 +1672,7 @@
         return;
       }
 
+      //call api
       try {
         const response = await fetch(`/api/grades/DeleteGrading/${recordId}`, {
           method: 'DELETE',
@@ -1647,6 +1807,7 @@
 
     //update grade
     async function modifyingRecord() {
+      //get input
       const formData = {
         id: document.getElementById("modify_record_id").value,
         student_id: document.getElementById("modify_student_id").value,
@@ -1657,6 +1818,7 @@
       };
 
       const messageDiv = document.getElementById("modify_formMessage");
+      //check
       if (
         !formData.id ||
         !formData.student_id ||
@@ -1691,7 +1853,7 @@
       }
     }
 
-    // dro Functions
+    // dro part
     function closeDROAll() {
       document.getElementById("droAddingForm").style.display = "none";
       document.getElementById("droDeleteForm").style.display = "none";
@@ -1709,21 +1871,23 @@
 
     //create discip
     async function submitDisciplinaryRecord() {
+      // get input
       const formData = {
         student_id: document.getElementById("add_disciplinary_student_id").value,
         date: document.getElementById("add_disciplinary_date").value,
-        staff_id: currentUser.id,
+        staff_id: document.getElementById("add_disciplinary_staff_id").value,
         descriptions: document.getElementById("add_disciplinary_descriptions").value,
       };
 
       const messageDiv = document.getElementById("dro_add_formMessage");
 
-      if (!formData.student_id || !formData.date || !formData.descriptions) {
+      if (!formData.student_id || !formData.date || !formData.staff_id || !formData.descriptions) {
         showMessage("dro_add_formMessage", "Please fill in all required fields", "error");
         return;
       }
 
       try {
+        //call api
         const response = await fetch('/api/disciplinary/AddDisciplinary', {
           method: 'POST',
           headers: {
@@ -1735,7 +1899,7 @@
         const data = await response.json();
 
         if (data.success) {
-          showMessage("dro_add_formMessage", "Disciplinary record added successfully! Record ID: " + data.data.id + " | Created by: " + currentUser.name, "success");
+          showMessage("dro_add_formMessage", "Disciplinary record added successfully!", "success");
           document.getElementById("disciplinaryForm").reset();
         } else {
           showMessage("dro_add_formMessage", data.message || "Failed to add disciplinary record", "error");
@@ -1801,6 +1965,7 @@
       document.getElementById("dro_query_formMessage").textContent = "";
       document.getElementById("dro_query_formMessage").className = "message";
     }
+
     // query discip base on record/student/staff id
     async function queryDisciplinaryRecords() {
       const recordId = document.getElementById("querying_disciplinary_id").value;
@@ -1844,12 +2009,15 @@
         }
         // query by staff id
         else {
+          //call api
           response = await fetch('/api/disciplinary');
+          //get data
           data = await response.json();
-
+          
           if (data.success) {
             let filteredData = data.data;
             if (staffId) {
+              // data staff id = staff id (input) 
               filteredData = filteredData.filter(record => record.staff_id == staffId);
             }
 
@@ -1879,22 +2047,24 @@
 
     // update discip
     async function modifyDisciplinaryRecord() {
+      // get input
       const formData = {
         id: document.getElementById("modify_disciplinary_id").value,
         student_id: document.getElementById("modify_disciplinary_student_id").value,
         date: document.getElementById("modify_disciplinary_date").value,
-        staff_id: currentUser.id,
+        staff_id: document.getElementById("modify_disciplinary_staff_id").value,
         descriptions: document.getElementById("modify_disciplinary_descriptions").value,
       };
-                                  
-      const messageDiv = document.getElementById("dro_modify_formMessage");
 
-      if (!formData.id || !formData.student_id || !formData.date || !formData.descriptions) {
+      const messageDiv = document.getElementById("dro_modify_formMessage");
+      //check
+      if (!formData.id || !formData.student_id || !formData.date || !formData.staff_id || !formData.descriptions) {
         showMessage("dro_modify_formMessage", "Please fill in all required fields", "error");
         return;
       }
 
       try {
+        //call api
         const response = await fetch('/api/disciplinary/EditDisciplinary', {
           method: 'POST',
           headers: {
@@ -1903,10 +2073,11 @@
           body: JSON.stringify(formData),
         });
 
+        //get data
         const data = await response.json();
-
+        
         if (data.success) {
-          showMessage("dro_modify_formMessage", "Disciplinary record updated successfully! Record ID: " + formData.id + " | Updated by: " + currentUser.name, "success");
+          showMessage("dro_modify_formMessage", "Disciplinary record updated successfully!", "success");
         } else {
           showMessage("dro_modify_formMessage", data.message || "Failed to update disciplinary record", "error");
         }
@@ -1926,52 +2097,44 @@
         return;
       }
 
-      const columns = Object.keys(results[0]);
-      const columnWidths = {};
-
-      columns.forEach(col => {
-        const headerWidth = col.length;
-        const contentWidth = Math.max(...results.map(row =>
-          String(row[col] || 'NULL').length
-        ));
-        columnWidths[col] = Math.max(headerWidth, contentWidth, 8) + 2;
-      });
-
-      const totalWidth = Object.values(columnWidths).reduce((a, b) => a + b, 0) + (columns.length * 3) + 1;
-
       let html = `<div class="message success">${message}</div>`;
-
-      const headerRow = columns.map(col => {
-        return `<span class="sql-keyword">${col.padEnd(columnWidths[col])}</span>`;
+      
+      // create table
+      html += '<table class="results-table">';
+      
+      // create colume name
+      const columns = Object.keys(results[0]);
+      html += '<thead><tr>';
+      columns.forEach(col => {
+        html += `<th>${(col)}</th>`;
       });
-      html += `| ${headerRow.join(' | ')} |<br>`;
-
-      // table rows
-      results.forEach((record) => {
-        const row = columns.map(col => {
+      html += '</tr></thead>';
+      
+      // put data inside
+      html += '<tbody>';
+      results.forEach(record => {
+        html += '<tr>';
+          // for each get colume
+        columns.forEach(col => {
+          // get value 
           const value = record[col];
-          let displayValue = value === null || value === undefined ? 'NULL' : String(value);
-          let cssClass = '';
-
+          // if value is null
           if (value === null || value === undefined) {
-            cssClass = 'sql-null';
-          } else if (typeof value === 'number') {
-            cssClass = 'sql-number';
+          displayValue = 'NULL';
           } else {
-            cssClass = 'sql-string';
+            // conv value to string
+            displayValue = String(value);
           }
-
-          return `<span class="${cssClass}">${displayValue.padEnd(columnWidths[col])}</span>`;
+          html += `<td>${displayValue}</td>`;
         });
-
-        html += `| ${row.join(' | ')} |<br>`;
+        html += '</tr>';
       });
-
+      html += '</tbody></table>';
+      
       container.innerHTML = html;
       container.style.display = "block";
     }
-
-
+    
   </script>
 </body>
 
